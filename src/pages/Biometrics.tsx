@@ -1,6 +1,7 @@
 import BMIAuditor from "@/components/BMIAuditor";
+import BackToHome from "@/components/BackToHome";
 
-const Index = () => {
+const Biometrics = () => {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <a
@@ -11,6 +12,10 @@ const Index = () => {
       </a>
 
       <div className="mx-auto w-full max-w-[375px] px-4 py-6">
+        <div className="mb-3">
+          <BackToHome />
+        </div>
+
         <header className="mb-6 border-b-2 border-primary pb-4">
           <p className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground">
             ZTC Clinical Resource · WPE Dept.
@@ -38,4 +43,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Biometrics;
