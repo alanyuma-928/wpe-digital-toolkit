@@ -1,182 +1,173 @@
-import { useMemo, useState } from "react";
-import { Card } from "@/components/ui/card";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-
-type Unit = "metric" | "imperial";
+import { Textarea } from "@/components/ui/textarea";
 
 interface BMIResult {
   bmi: number;
   category: string;
-  description: string;
+  range: string;
 }
 
-const classify = (bmi: number): { category: string; description: string } => {
-  // WHO / ACSM 12th Ed adult BMI categories
-  if (bmi < 18.5) return { category: "Underweight", description: "BMI below 18.5 (ACSM 12th Ed.)" };
-  if (bmi < 25) return { category: "Normal Weight", description: "BMI 18.5–24.9 (ACSM 12th Ed.)" };
-  if (bmi < 30) return { category: "Overweight", description: "BMI 25.0–29.9 (ACSM 12th Ed.)" };
-  if (bmi < 35) return { category: "Obesity Class I", description: "BMI 30.0–34.9 (ACSM 12th Ed.)" };
-  if (bmi < 40) return { category: "Obesity Class II", description: "BMI 35.0–39.9 (ACSM 12th Ed.)" };
-  return { category: "Obesity Class III", description: "BMI ≥ 40.0 (ACSM 12th Ed.)" };
+const classify = (bmi: number): { category: string; range: string } => {
+  // ACSM 12th Ed adult BMI categories
+  if (bmi < 18.5) return { category: "Underweight", range: "BMI < 18.5" };
+  if (bmi < 25) return { category: "Healthy", range: "BMI 18.5–24.9" };
+  if (bmi < 30) return { category: "Overweight", range: "BMI 25.0–29.9" };
+  return { category: "Obese", range: "BMI ≥ 30.0" };
 };
 
 const BMIAuditor = () => {
-  const [unit, setUnit] = useState<Unit>("metric");
-  const [heightCm, setHeightCm] = useState("");
-  const [weightKg, setWeightKg] = useState("");
   const [heightIn, setHeightIn] = useState("");
   const [weightLb, setWeightLb] = useState("");
+  const [notes, setNotes] = useState("");
   const [result, setResult] = useState<BMIResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const compute = () => {
     setError(null);
-    let bmi = 0;
-    if (unit === "metric") {
-      const h = parseFloat(heightCm);
-      const w = parseFloat(weightKg);
-      if (!h || !w || h <= 0 || w <= 0) {
-        setError("Please enter valid height (cm) and weight (kg).");
-        setResult(null);
-        return;
-      }
-      const m = h / 100;
-      bmi = w / (m * m);
-    } else {
-      const h = parseFloat(heightIn);
-      const w = parseFloat(weightLb);
-      if (!h || !w || h <= 0 || w <= 0) {
-        setError("Please enter valid height (in) and weight (lb).");
-        setResult(null);
-        return;
-      }
-      bmi = (w / (h * h)) * 703;
+    const h = parseFloat(heightIn);
+    const w = parseFloat(weightLb);
+    if (!h || !w || h <= 0 || w <= 0) {
+      setError("Enter valid Height (in) and Weight (lb).");
+      setResult(null);
+      return;
     }
-    const { category, description } = classify(bmi);
-    setResult({ bmi: Math.round(bmi * 10) / 10, category, description });
+    const bmi = (w / (h * h)) * 703;
+    const { category, range } = classify(bmi);
+    setResult({ bmi: Math.round(bmi * 10) / 10, category, range });
   };
 
   const reset = () => {
-    setHeightCm("");
-    setWeightKg("");
     setHeightIn("");
     setWeightLb("");
+    setNotes("");
     setResult(null);
     setError(null);
   };
 
-  const ringColor = useMemo(() => {
-    if (!result) return "border-border";
-    if (result.bmi < 18.5 || result.bmi >= 30) return "border-destructive";
-    if (result.bmi < 25) return "border-primary";
-    return "border-accent";
-  }, [result]);
-
   return (
-    <Card className="p-6 shadow-[var(--shadow-soft)] border-2 border-primary/20">
-      <h2 className="text-2xl font-bold text-foreground mb-1">BMI Auditor</h2>
+    <section
+      aria-labelledby="auditor-heading"
+      className="bg-card border-2 border-primary rounded-lg p-5"
+    >
+      <h3 id="auditor-heading" className="text-xl font-bold text-foreground mb-1">
+        BMI Auditor
+      </h3>
       <p className="text-sm text-muted-foreground mb-5">
-        Aligned with ACSM 12th Ed. & PAGA 2018 (2nd Ed.).
+        ACSM 12th Ed. classification. Imperial units.
       </p>
 
-      <Tabs value={unit} onValueChange={(v) => setUnit(v as Unit)} className="mb-5">
-        <TabsList className="grid w-full grid-cols-2 bg-secondary">
-          <TabsTrigger value="metric">Metric (cm / kg)</TabsTrigger>
-          <TabsTrigger value="imperial">Imperial (in / lb)</TabsTrigger>
-        </TabsList>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          compute();
+        }}
+        className="space-y-4"
+        noValidate
+      >
+        <div className="space-y-2">
+          <Label htmlFor="height-in" className="text-base text-foreground">
+            Height (inches)
+          </Label>
+          <Input
+            id="height-in"
+            name="height-in"
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="0.1"
+            placeholder="e.g. 67"
+            value={heightIn}
+            onChange={(e) => setHeightIn(e.target.value)}
+            className="h-12 text-base border-2 border-primary/40"
+            aria-required="true"
+            aria-invalid={!!error}
+          />
+        </div>
 
-        <TabsContent value="metric" className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <Label htmlFor="hcm">Height (cm)</Label>
-            <Input
-              id="hcm"
-              type="number"
-              inputMode="decimal"
-              placeholder="e.g. 170"
-              value={heightCm}
-              onChange={(e) => setHeightCm(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="wkg">Weight (kg)</Label>
-            <Input
-              id="wkg"
-              type="number"
-              inputMode="decimal"
-              placeholder="e.g. 65"
-              value={weightKg}
-              onChange={(e) => setWeightKg(e.target.value)}
-            />
-          </div>
-        </TabsContent>
+        <div className="space-y-2">
+          <Label htmlFor="weight-lb" className="text-base text-foreground">
+            Weight (pounds)
+          </Label>
+          <Input
+            id="weight-lb"
+            name="weight-lb"
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="0.1"
+            placeholder="e.g. 145"
+            value={weightLb}
+            onChange={(e) => setWeightLb(e.target.value)}
+            className="h-12 text-base border-2 border-primary/40"
+            aria-required="true"
+            aria-invalid={!!error}
+          />
+        </div>
 
-        <TabsContent value="imperial" className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <Label htmlFor="hin">Height (inches)</Label>
-            <Input
-              id="hin"
-              type="number"
-              inputMode="decimal"
-              placeholder="e.g. 67"
-              value={heightIn}
-              onChange={(e) => setHeightIn(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="wlb">Weight (lb)</Label>
-            <Input
-              id="wlb"
-              type="number"
-              inputMode="decimal"
-              placeholder="e.g. 145"
-              value={weightLb}
-              onChange={(e) => setWeightLb(e.target.value)}
-            />
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      <div className="flex gap-3">
-        <Button onClick={compute} variant="default" className="flex-1">
-          Audit BMI
-        </Button>
-        <Button onClick={reset} variant="outline">
-          Reset
-        </Button>
-      </div>
+        <div className="flex gap-3 pt-1">
+          <Button
+            type="submit"
+            className="flex-1 h-12 text-base font-semibold"
+          >
+            Calculate BMI
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={reset}
+            className="h-12 px-5 text-base border-2 border-primary text-foreground"
+          >
+            Reset
+          </Button>
+        </div>
+      </form>
 
       {error && (
-        <p className="mt-4 text-sm text-destructive font-medium" role="alert">
+        <p
+          role="alert"
+          className="mt-4 text-sm font-semibold text-destructive"
+        >
           {error}
         </p>
       )}
 
       {result && (
         <div
-          className={`mt-6 rounded-xl border-2 ${ringColor} bg-secondary/40 p-5 text-center transition-all`}
+          role="status"
+          aria-live="polite"
+          className="mt-6 border-2 border-primary rounded-lg p-4 bg-secondary"
         >
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
-            Your BMI
+            Calculated BMI
           </p>
-          <p className="text-5xl font-extrabold text-foreground my-2 tabular-nums">
+          <p className="text-4xl font-extrabold text-foreground mt-1 tabular-nums">
             {result.bmi}
           </p>
-          <p className="text-lg font-semibold text-foreground">
-            {result.category}
+          <p className="mt-3 text-xs uppercase tracking-widest text-muted-foreground">
+            ACSM Category
           </p>
-          <p className="text-xs text-muted-foreground mt-1">{result.description}</p>
+          <p className="text-lg font-bold text-foreground">{result.category}</p>
+          <p className="text-xs text-muted-foreground mt-1">{result.range}</p>
         </div>
       )}
 
-      <p className="mt-5 text-[11px] leading-snug text-muted-foreground">
-        Note: BMI is a screening tool, not a diagnostic. Per ACSM 12th Ed.,
-        interpret alongside body composition, waist circumference, and PAGA
-        2018 (2nd Ed.) physical activity status.
-      </p>
-    </Card>
+      <div className="mt-6 space-y-2">
+        <Label htmlFor="clinical-notes" className="text-base text-foreground">
+          Clinical Notes
+        </Label>
+        <Textarea
+          id="clinical-notes"
+          name="clinical-notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="### Wrap client data in triple-hashes ###"
+          className="min-h-[120px] text-base border-2 border-primary/40 bg-background"
+        />
+      </div>
+    </section>
   );
 };
 
