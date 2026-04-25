@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import { Activity, Gauge, Apple, ShieldCheck } from "lucide-react";
+import { Activity, Gauge, Apple, ShieldCheck, type LucideIcon } from "lucide-react";
 
 interface ModuleTile {
   to: string;
   title: string;
   subtitle: string;
   ariaLabel: string;
-  Icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+  Icon: LucideIcon;
   enabled: boolean;
 }
 
