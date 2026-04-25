@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "./pages/Home.tsx";
 import Biometrics from "./pages/Biometrics.tsx";
 import Engine from "./pages/Engine.tsx";
+import Fuel from "./pages/Fuel.tsx";
 import ModulePlaceholder from "./pages/ModulePlaceholder.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -21,16 +22,7 @@ const App = () => (
           <Route path="/" element={<Home />} />
           <Route path="/biometrics" element={<Biometrics />} />
           <Route path="/engine" element={<Engine />} />
-          <Route
-            path="/fuel"
-            element={
-              <ModulePlaceholder
-                title="The Fuel Box"
-                tagline="Nutrition · PAGA 2018 (2nd Ed.)"
-                upcoming={["EXW 150 Resting Metabolic Rate", "Dietary Guidelines for Americans (DGA)"]}
-              />
-            }
-          />
+          <Route path="/fuel" element={<Fuel />} />
           <Route
             path="/safety"
             element={

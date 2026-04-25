@@ -31,9 +31,9 @@ const modules: ModuleTile[] = [
     to: "/fuel",
     title: "The Fuel Box",
     subtitle: "EXW 150 RMR · DGA",
-    ariaLabel: "Open The Fuel Box: EXW 150 Resting Metabolic Rate and Dietary Guidelines (coming soon)",
+    ariaLabel: "Open The Fuel Box: EXW 150 Resting Metabolic Rate and Dietary Guidelines",
     Icon: Apple,
-    enabled: false,
+    enabled: true,
   },
   {
     to: "/safety",
