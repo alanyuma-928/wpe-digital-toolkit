@@ -39,9 +39,9 @@ const modules: ModuleTile[] = [
     to: "/safety",
     title: "The Safety Box",
     subtitle: "PAR-Q+ · Sr. Fitness",
-    ariaLabel: "Open The Safety Box: PAR-Q+ and Senior Fitness screening (coming soon)",
+    ariaLabel: "Open The Safety Box: PAR-Q+ and Senior Fitness screening",
     Icon: ShieldCheck,
-    enabled: false,
+    enabled: true,
   },
 ];
 
