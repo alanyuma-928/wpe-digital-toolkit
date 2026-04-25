@@ -8,35 +8,40 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* WPE Digital Tool Kit — Navy on Creme */
+    --background: 60 56% 91%;        /* #F5F5DC creme */
+    --foreground: 215 100% 14%;      /* #002147 navy */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 60 56% 95%;
+    --card-foreground: 215 100% 14%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 60 56% 95%;
+    --popover-foreground: 215 100% 14%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 215 100% 14%;         /* navy */
+    --primary-foreground: 60 56% 91%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 60 40% 85%;
+    --secondary-foreground: 215 100% 14%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 60 30% 88%;
+    --muted-foreground: 215 40% 30%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 215 100% 25%;
+    --accent-foreground: 60 56% 91%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 40%;
+    --destructive-foreground: 60 56% 91%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 215 40% 75%;
+    --input: 215 40% 80%;
+    --ring: 215 100% 14%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    --shadow-elegant: 0 10px 30px -10px hsl(215 100% 14% / 0.25);
+    --shadow-soft: 0 4px 12px -4px hsl(215 100% 14% / 0.15);
+    --gradient-navy: linear-gradient(135deg, hsl(215 100% 14%), hsl(215 100% 22%));
 
     --sidebar-background: 0 0% 98%;
 
