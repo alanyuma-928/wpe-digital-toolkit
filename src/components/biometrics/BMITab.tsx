@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import ClinicalNotes from "./ClinicalNotes";
 
 interface BMIResult {
   bmi: number;
@@ -11,17 +11,15 @@ interface BMIResult {
 }
 
 const classify = (bmi: number): { category: string; range: string } => {
-  // ACSM 12th Ed adult BMI categories
   if (bmi < 18.5) return { category: "Underweight", range: "BMI < 18.5" };
   if (bmi < 25) return { category: "Healthy", range: "BMI 18.5–24.9" };
   if (bmi < 30) return { category: "Overweight", range: "BMI 25.0–29.9" };
   return { category: "Obese", range: "BMI ≥ 30.0" };
 };
 
-const BMIAuditor = () => {
+const BMITab = () => {
   const [heightIn, setHeightIn] = useState("");
   const [weightLb, setWeightLb] = useState("");
-  const [notes, setNotes] = useState("");
   const [result, setResult] = useState<BMIResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,20 +37,16 @@ const BMIAuditor = () => {
     setResult({ bmi: Math.round(bmi * 10) / 10, category, range });
   };
 
-  const reset = () => {
+  const clearAll = () => {
     setHeightIn("");
     setWeightLb("");
-    setNotes("");
     setResult(null);
     setError(null);
   };
 
   return (
-    <section
-      aria-labelledby="auditor-heading"
-      className="bg-card border-2 border-primary rounded-lg p-5"
-    >
-      <h3 id="auditor-heading" className="text-xl font-bold text-foreground mb-1">
+    <section aria-labelledby="bmi-heading">
+      <h3 id="bmi-heading" className="text-xl font-bold text-foreground mb-1">
         BMI Auditor
       </h3>
       <p className="text-sm text-muted-foreground mb-5">
@@ -73,7 +67,6 @@ const BMIAuditor = () => {
           </Label>
           <Input
             id="height-in"
-            name="height-in"
             type="number"
             inputMode="decimal"
             min="0"
@@ -93,7 +86,6 @@ const BMIAuditor = () => {
           </Label>
           <Input
             id="weight-lb"
-            name="weight-lb"
             type="number"
             inputMode="decimal"
             min="0"
@@ -108,28 +100,23 @@ const BMIAuditor = () => {
         </div>
 
         <div className="flex gap-3 pt-1">
-          <Button
-            type="submit"
-            className="flex-1 h-12 text-base font-semibold"
-          >
+          <Button type="submit" className="flex-1 h-12 text-base font-semibold">
             Calculate BMI
           </Button>
           <Button
             type="button"
             variant="outline"
-            onClick={reset}
-            className="h-12 px-5 text-base border-2 border-primary text-foreground"
+            onClick={clearAll}
+            className="h-12 px-4 text-base border-2 border-primary text-foreground"
+            aria-label="Clear all BMI fields"
           >
-            Reset
+            Clear All
           </Button>
         </div>
       </form>
 
       {error && (
-        <p
-          role="alert"
-          className="mt-4 text-sm font-semibold text-destructive"
-        >
+        <p role="alert" className="mt-4 text-sm font-semibold text-destructive">
           {error}
         </p>
       )}
@@ -154,21 +141,9 @@ const BMIAuditor = () => {
         </div>
       )}
 
-      <div className="mt-6 space-y-2">
-        <Label htmlFor="clinical-notes" className="text-base text-foreground">
-          Clinical Notes
-        </Label>
-        <Textarea
-          id="clinical-notes"
-          name="clinical-notes"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="### Wrap client data in triple-hashes ###"
-          className="min-h-[120px] text-base border-2 border-primary/40 bg-background"
-        />
-      </div>
+      <ClinicalNotes idSuffix="bmi" />
     </section>
   );
 };
 
-export default BMIAuditor;
+export default BMITab;

@@ -1,5 +1,8 @@
-import BMIAuditor from "@/components/BMIAuditor";
 import BackToHome from "@/components/BackToHome";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import BMITab from "@/components/biometrics/BMITab";
+import WHRTab from "@/components/biometrics/WHRTab";
+import SkinfoldTab from "@/components/biometrics/SkinfoldTab";
 
 const Biometrics = () => {
   return (
@@ -24,18 +27,53 @@ const Biometrics = () => {
             WPE Biometrics Auditor
           </h2>
           <p className="text-xs text-muted-foreground mt-2">
-            SSOT: ACSM 12th Ed. · PAGA 2018 (2nd Ed.)
+            SSOT: ACSM 12th Ed. · Jackson-Pollock 3-Site · Siri
           </p>
         </header>
 
         <div id="main-content">
-          <BMIAuditor />
+          <div className="bg-card border-2 border-primary rounded-lg p-4">
+            <Tabs defaultValue="bmi" className="w-full">
+              <TabsList
+                className="grid w-full grid-cols-3 h-12 bg-secondary border-2 border-primary/40 p-1"
+                aria-label="Biometric auditors"
+              >
+                <TabsTrigger
+                  value="bmi"
+                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  BMI
+                </TabsTrigger>
+                <TabsTrigger
+                  value="whr"
+                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  WHR
+                </TabsTrigger>
+                <TabsTrigger
+                  value="skinfold"
+                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  Skinfold
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="bmi" className="mt-5">
+                <BMITab />
+              </TabsContent>
+              <TabsContent value="whr" className="mt-5">
+                <WHRTab />
+              </TabsContent>
+              <TabsContent value="skinfold" className="mt-5">
+                <SkinfoldTab />
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
 
         <footer className="mt-8 pt-4 border-t-2 border-primary/40 text-center">
           <p className="text-[11px] text-muted-foreground">
-            BMI is a screening indicator. Interpret with body composition &amp;
-            waist circumference per ACSM 12th Ed.
+            Screening indicators only. Interpret with full clinical picture per ACSM 12th Ed.
           </p>
         </footer>
       </div>
