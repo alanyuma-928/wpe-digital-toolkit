@@ -25,7 +25,7 @@ const modules: ModuleTile[] = [
     subtitle: "Rockport · Cooper",
     ariaLabel: "Open The Engine Box: Rockport and Cooper cardiorespiratory tests (coming soon)",
     Icon: Gauge,
-    enabled: false,
+    enabled: true,
   },
   {
     to: "/fuel",
