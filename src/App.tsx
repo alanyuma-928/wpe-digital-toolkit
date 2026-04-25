@@ -8,7 +8,7 @@ import Biometrics from "./pages/Biometrics.tsx";
 import Engine from "./pages/Engine.tsx";
 import Fuel from "./pages/Fuel.tsx";
 import Safety from "./pages/Safety.tsx";
-import ModulePlaceholder from "./pages/ModulePlaceholder.tsx";
+import NotFound from "./pages/NotFound.tsx";
 
 
 const queryClient = new QueryClient();
