@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "./pages/Home.tsx";
 import Biometrics from "./pages/Biometrics.tsx";
+import Engine from "./pages/Engine.tsx";
 import ModulePlaceholder from "./pages/ModulePlaceholder.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -19,16 +20,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/biometrics" element={<Biometrics />} />
-          <Route
-            path="/engine"
-            element={
-              <ModulePlaceholder
-                title="The Engine Box"
-                tagline="Cardiorespiratory · ACSM 12th Ed."
-                upcoming={["Rockport 1-Mile Walk Test", "Cooper 12-Minute Run Test"]}
-              />
-            }
-          />
+          <Route path="/engine" element={<Engine />} />
           <Route
             path="/fuel"
             element={
