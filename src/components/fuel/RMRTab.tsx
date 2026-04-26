@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ClinicalNotes from "@/components/biometrics/ClinicalNotes";
+import CopyAuditButton from "@/components/CopyAuditButton";
 import { calcBMR, type Sex } from "./fuelTypes";
 
 interface RMRTabProps {
@@ -188,6 +189,26 @@ const RMRTab = ({
           </p>
         </div>
       )}
+
+      <CopyAuditButton
+        getMarkdown={() =>
+          bmr !== null && bmr > 0
+            ? [
+                "### WPE Audit · Resting Metabolic Rate",
+                "",
+                `- **Sex**: ${sex}`,
+                `- **Weight**: ${weight} kg`,
+                `- **Height**: ${height} cm`,
+                `- **Age**: ${age} yr`,
+                "",
+                `**RMR (Harris-Benedict revised)**: ${bmr} kcal/day`,
+                "",
+                "_SSOT: PAGA 2018 (2nd Ed.) · Harris-Benedict_",
+              ].join("\n")
+            : ""
+        }
+        disabled={bmr === null || bmr <= 0}
+      />
 
       <ClinicalNotes idSuffix="rmr" />
     </section>

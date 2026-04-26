@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ClinicalNotes from "./ClinicalNotes";
+import CopyAuditButton from "@/components/CopyAuditButton";
 
 type Sex = "male" | "female";
 
@@ -262,6 +263,31 @@ const SkinfoldTab = () => {
           </dl>
         </div>
       )}
+
+      <CopyAuditButton
+        getMarkdown={() => {
+          if (!result) return "";
+          const siteList =
+            sex === "male"
+              ? `Chest ${chest}mm, Abdomen ${abdomen}mm, Thigh ${thighM}mm`
+              : `Triceps ${triceps}mm, Suprailiac ${suprailiac}mm, Thigh ${thighF}mm`;
+          return [
+            "### WPE Audit · Skinfold (Jackson-Pollock 3-Site · Siri)",
+            "",
+            `- **Sex**: ${sex}`,
+            `- **Age**: ${age} yr`,
+            `- **Sites**: ${siteList}`,
+            `- **Σ Skinfolds**: ${result.sumMm} mm`,
+            `- **Body Density**: ${result.bodyDensity.toFixed(4)}`,
+            "",
+            `**% Body Fat (Siri)**: ${result.bodyFatPct}%`,
+            `**ACSM Category (${sex})**: ${result.category}`,
+            "",
+            "_SSOT: ACSM 12th Ed. · Jackson-Pollock · Siri Equation_",
+          ].join("\n");
+        }}
+        disabled={!result}
+      />
 
       <ClinicalNotes idSuffix="skinfold" />
     </section>

@@ -1,9 +1,20 @@
+import { useMemo, useState } from "react";
 import BackToHome from "@/components/BackToHome";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertTriangle } from "lucide-react";
 import PARQTab from "@/components/safety/PARQTab";
 import SeniorFitnessTab from "@/components/safety/SeniorFitnessTab";
 
 const Safety = () => {
+  const [parqAnswers, setParqAnswers] = useState<Record<string, boolean>>({});
+  const [parqSubmitted, setParqSubmitted] = useState(false);
+
+  const yesCount = useMemo(
+    () => Object.values(parqAnswers).filter(Boolean).length,
+    [parqAnswers],
+  );
+  const flagged = yesCount > 0;
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       <a
@@ -30,6 +41,27 @@ const Safety = () => {
           </p>
         </header>
 
+        {flagged && (
+          <div
+            role="alert"
+            className="mb-4 border-2 border-destructive rounded-lg p-3 bg-destructive/10 flex items-start gap-2"
+          >
+            <AlertTriangle
+              className="h-5 w-5 text-destructive shrink-0 mt-0.5"
+              aria-hidden="true"
+            />
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-wide text-destructive">
+                PAR-Q+ Flag Active · Senior Fitness Locked
+              </p>
+              <p className="text-[11px] text-destructive font-semibold mt-0.5">
+                {yesCount} Yes response{yesCount === 1 ? "" : "s"} — medical
+                clearance required.
+              </p>
+            </div>
+          </div>
+        )}
+
         <div id="main-content">
           <div className="bg-card border-2 border-primary rounded-lg p-4">
             <Tabs defaultValue="parq" className="w-full">
@@ -48,14 +80,22 @@ const Safety = () => {
                   className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   Sr. Fitness
+                  {flagged && (
+                    <span className="sr-only"> (locked)</span>
+                  )}
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="parq" className="mt-5">
-                <PARQTab />
+                <PARQTab
+                  answers={parqAnswers}
+                  setAnswers={setParqAnswers}
+                  submitted={parqSubmitted}
+                  setSubmitted={setParqSubmitted}
+                />
               </TabsContent>
               <TabsContent value="senior" className="mt-5">
-                <SeniorFitnessTab />
+                <SeniorFitnessTab locked={flagged} lockedYesCount={yesCount} />
               </TabsContent>
             </Tabs>
           </div>

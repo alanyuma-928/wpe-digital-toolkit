@@ -1,12 +1,13 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, ShieldCheck } from "lucide-react";
 import ClinicalNotes from "@/components/biometrics/ClinicalNotes";
+import CopyAuditButton from "@/components/CopyAuditButton";
 
 // PAR-Q+ 2024 — 7 core general health questions
-const PARQ_QUESTIONS: { id: string; text: string }[] = [
+export const PARQ_QUESTIONS: { id: string; text: string }[] = [
   {
     id: "q1",
     text: "Has your doctor ever said that you have a heart condition OR high blood pressure?",
@@ -37,17 +38,21 @@ const PARQ_QUESTIONS: { id: string; text: string }[] = [
   },
 ];
 
-const PARQTab = () => {
-  const [answers, setAnswers] = useState<Record<string, boolean>>({});
-  const [submitted, setSubmitted] = useState(false);
+interface PARQTabProps {
+  answers: Record<string, boolean>;
+  setAnswers: (a: Record<string, boolean>) => void;
+  submitted: boolean;
+  setSubmitted: (v: boolean) => void;
+}
 
+const PARQTab = ({ answers, setAnswers, submitted, setSubmitted }: PARQTabProps) => {
   const yesCount = useMemo(
     () => Object.values(answers).filter(Boolean).length,
     [answers],
   );
 
   const toggle = (id: string, checked: boolean) => {
-    setAnswers((prev) => ({ ...prev, [id]: checked }));
+    setAnswers({ ...answers, [id]: checked });
     setSubmitted(false);
   };
 
@@ -57,6 +62,23 @@ const PARQTab = () => {
   };
 
   const flagged = yesCount > 0;
+
+  const buildMarkdown = () => {
+    const lines = [
+      "### WPE Audit · PAR-Q+ 2024",
+      "",
+      `**Yes count**: ${yesCount} / 7`,
+      `**Status**: ${flagged ? "⚠ RECALIBRATE — Medical Clearance Required" : "✓ Cleared for Activity"}`,
+      "",
+      "**Responses**:",
+      ...PARQ_QUESTIONS.map(
+        (q, i) => `${i + 1}. ${answers[q.id] ? "**YES**" : "No"} — ${q.text}`,
+      ),
+      "",
+      "_SSOT: PAR-Q+ 2024 · ACSM 12th Ed._",
+    ];
+    return lines.join("\n");
+  };
 
   return (
     <section aria-labelledby="parq-heading">
@@ -157,7 +179,8 @@ const PARQTab = () => {
               </p>
               <p className="text-xs text-foreground mt-2">
                 Per PAR-Q+ 2024, refer client to a qualified healthcare provider
-                before commencing or progressing physical activity.
+                before commencing or progressing physical activity. Senior
+                Fitness Test is locked until cleared.
               </p>
             </div>
           </div>
@@ -187,6 +210,11 @@ const PARQTab = () => {
           </div>
         </div>
       )}
+
+      <CopyAuditButton
+        getMarkdown={buildMarkdown}
+        disabled={Object.keys(answers).length === 0}
+      />
 
       <ClinicalNotes idSuffix="parq" />
     </section>

@@ -3,47 +3,73 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
 import ClinicalNotes from "@/components/biometrics/ClinicalNotes";
-import { classifyVO2, parseTime, type Sex } from "./vo2norms";
+import CopyAuditButton from "@/components/CopyAuditButton";
+import { classifyVO2, type Sex } from "./vo2norms";
 
 interface CooperResult {
   vo2: number;
   category: string;
   band: string;
+  decimalMin: number;
 }
 
+const fmtTime = (mm: number, ss: number) =>
+  `${mm}:${ss.toString().padStart(2, "0")}`;
+
 const CooperTab = () => {
-  const [runTime, setRunTime] = useState("");
+  const [runMin, setRunMin] = useState(12);
+  const [runSec, setRunSec] = useState(45);
   const [age, setAge] = useState("");
   const [sex, setSex] = useState<Sex>("male");
   const [result, setResult] = useState<CooperResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const decimalMin = runMin + runSec / 60;
+
   const compute = () => {
     setError(null);
-    const t = parseTime(runTime);
     const a = parseFloat(age);
-    if (t === null || t <= 0 || !a || a <= 0) {
-      setError("Enter valid Run Time (MM:SS) and Age.");
+    if (decimalMin <= 0 || !a || a <= 0) {
+      setError("Enter valid Run Time and Age.");
       setResult(null);
       return;
     }
 
     // Cooper 1.5-mile run estimate
-    const vo2 = 483 / t + 3.5;
+    const vo2 = 483 / decimalMin + 3.5;
     const norm = classifyVO2(vo2, a, sex);
     setResult({
       vo2: Math.round(vo2 * 10) / 10,
       category: norm?.category ?? "Out of norm range",
       band: norm?.band ?? "—",
+      decimalMin: Math.round(decimalMin * 100) / 100,
     });
   };
 
   const clearAll = () => {
-    setRunTime("");
+    setRunMin(12);
+    setRunSec(45);
     setAge("");
     setResult(null);
     setError(null);
+  };
+
+  const buildMarkdown = () => {
+    if (!result) return "";
+    return [
+      "### WPE Audit · Cooper 1.5-Mile Run",
+      "",
+      `- **Sex**: ${sex}`,
+      `- **Age**: ${age} yr`,
+      `- **Run Time**: ${fmtTime(runMin, runSec)} (${result.decimalMin} min)`,
+      "",
+      `**Estimated VO₂max**: ${result.vo2} ml/kg/min`,
+      `**ACSM Norm (${sex} · ${result.band})**: ${result.category}`,
+      "",
+      "_SSOT: ACSM 12th Ed. · Cooper (1968)_",
+    ].join("\n");
   };
 
   return (
@@ -63,22 +89,60 @@ const CooperTab = () => {
         className="space-y-4"
         noValidate
       >
-        <div className="space-y-2">
-          <Label htmlFor="cp-time" className="text-base text-foreground">
-            Run Time (MM:SS)
-          </Label>
-          <Input
-            id="cp-time"
-            type="text"
-            inputMode="numeric"
-            placeholder="e.g. 12:45"
-            value={runTime}
-            onChange={(e) => setRunTime(e.target.value)}
-            className="h-12 text-base border-2 border-primary/40 tabular-nums"
-            aria-required="true"
-            aria-invalid={!!error}
-          />
-        </div>
+        <fieldset className="space-y-3 border-2 border-primary/40 rounded-md p-3 bg-card">
+          <legend className="px-1 text-base font-medium text-foreground">
+            Run Time
+          </legend>
+          <p
+            className="text-3xl font-extrabold text-foreground tabular-nums text-center"
+            aria-live="polite"
+          >
+            {fmtTime(runMin, runSec)}
+            <span className="text-xs font-semibold text-muted-foreground ml-2">
+              ({decimalMin.toFixed(2)} min)
+            </span>
+          </p>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="cp-min" className="text-sm text-foreground">
+                Minutes
+              </Label>
+              <span className="text-sm font-bold text-foreground tabular-nums">
+                {runMin}
+              </span>
+            </div>
+            <Slider
+              id="cp-min"
+              min={5}
+              max={25}
+              step={1}
+              value={[runMin]}
+              onValueChange={(v) => setRunMin(v[0])}
+              aria-label="Run time minutes"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="cp-sec" className="text-sm text-foreground">
+                Seconds
+              </Label>
+              <span className="text-sm font-bold text-foreground tabular-nums">
+                {runSec.toString().padStart(2, "0")}
+              </span>
+            </div>
+            <Slider
+              id="cp-sec"
+              min={0}
+              max={59}
+              step={1}
+              value={[runSec]}
+              onValueChange={(v) => setRunSec(v[0])}
+              aria-label="Run time seconds"
+            />
+          </div>
+        </fieldset>
 
         <div className="space-y-2">
           <Label htmlFor="cp-age" className="text-base text-foreground">
@@ -164,6 +228,8 @@ const CooperTab = () => {
           <p className="text-lg font-bold text-foreground">{result.category}</p>
         </div>
       )}
+
+      <CopyAuditButton getMarkdown={buildMarkdown} disabled={!result} />
 
       <ClinicalNotes idSuffix="cooper" />
     </section>
