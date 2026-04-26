@@ -4,8 +4,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
+import { Thermometer } from "lucide-react";
 import ClinicalNotes from "@/components/biometrics/ClinicalNotes";
 import CopyAuditButton from "@/components/CopyAuditButton";
+import { useWeather, THERMAL_REDLINE_F } from "@/context/WeatherContext";
 import { classifyVO2, type Sex } from "./vo2norms";
 
 interface CooperResult {
@@ -19,6 +21,7 @@ const fmtTime = (mm: number, ss: number) =>
   `${mm}:${ss.toString().padStart(2, "0")}`;
 
 const CooperTab = () => {
+  const { data: weather, outdoorLocked } = useWeather();
   const [runMin, setRunMin] = useState(12);
   const [runSec, setRunSec] = useState(45);
   const [age, setAge] = useState("");
