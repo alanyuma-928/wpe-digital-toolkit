@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import ClinicalNotes from "./ClinicalNotes";
+import CopyAuditButton from "@/components/CopyAuditButton";
 
 interface BMIResult {
   bmi: number;
@@ -140,6 +141,25 @@ const BMITab = () => {
           <p className="text-xs text-muted-foreground mt-1">{result.range}</p>
         </div>
       )}
+
+      <CopyAuditButton
+        getMarkdown={() =>
+          result
+            ? [
+                "### WPE Audit · BMI",
+                "",
+                `- **Height**: ${heightIn} in`,
+                `- **Weight**: ${weightLb} lb`,
+                "",
+                `**BMI**: ${result.bmi}`,
+                `**Category**: ${result.category} (${result.range})`,
+                "",
+                "_SSOT: ACSM 12th Ed._",
+              ].join("\n")
+            : ""
+        }
+        disabled={!result}
+      />
 
       <ClinicalNotes idSuffix="bmi" />
     </section>

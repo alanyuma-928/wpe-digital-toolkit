@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ClinicalNotes from "./ClinicalNotes";
+import CopyAuditButton from "@/components/CopyAuditButton";
 
 type Sex = "male" | "female";
 
@@ -175,6 +176,26 @@ const WHRTab = () => {
           <p className="text-xs text-muted-foreground mt-1">{result.range}</p>
         </div>
       )}
+
+      <CopyAuditButton
+        getMarkdown={() =>
+          result
+            ? [
+                "### WPE Audit · Waist-to-Hip Ratio",
+                "",
+                `- **Sex**: ${sex}`,
+                `- **Waist**: ${waist}`,
+                `- **Hip**: ${hip}`,
+                "",
+                `**WHR**: ${result.ratio.toFixed(2)}`,
+                `**Risk**: ${result.category} (${result.range})`,
+                "",
+                "_SSOT: ACSM 12th Ed._",
+              ].join("\n")
+            : ""
+        }
+        disabled={!result}
+      />
 
       <ClinicalNotes idSuffix="whr" />
     </section>
