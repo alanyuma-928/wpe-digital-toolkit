@@ -3,14 +3,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Lock } from "lucide-react";
 import ClinicalNotes from "@/components/biometrics/ClinicalNotes";
+import CopyAuditButton from "@/components/CopyAuditButton";
 import {
   classifySenior,
   type SeniorClassification,
   type SeniorSex,
 } from "./seniorNorms";
 
-const SeniorFitnessTab = () => {
+interface SeniorFitnessTabProps {
+  /** When true, the entire tool is locked out (set by PAR-Q+ Yes responses). */
+  locked?: boolean;
+  lockedYesCount?: number;
+}
+
+const SeniorFitnessTab = ({
+  locked = false,
+  lockedYesCount = 0,
+}: SeniorFitnessTabProps) => {
   const [age, setAge] = useState("");
   const [sex, setSex] = useState<SeniorSex>("male");
   const [chair, setChair] = useState("");
@@ -46,11 +57,67 @@ const SeniorFitnessTab = () => {
   };
 
   const catClass = (cat: string) =>
-    cat === "Below Average"
-      ? "text-destructive"
-      : cat === "Above Average"
-        ? "text-foreground"
-        : "text-foreground";
+    cat === "Below Average" ? "text-destructive" : "text-foreground";
+
+  const buildMarkdown = () => {
+    if (!result) return "";
+    return [
+      "### WPE Audit · Senior Fitness Test (Rikli & Jones)",
+      "",
+      `- **Sex**: ${sex}`,
+      `- **Age**: ${age} yr (band ${result.band})`,
+      `- **30-Sec Chair Stand**: ${chair} reps (norm ${result.chairStand.range.low}–${result.chairStand.range.high}) → **${result.chairStand.category}**`,
+      `- **8-Ft Up-and-Go**: ${tug} sec (norm ${result.upAndGo.range.low}–${result.upAndGo.range.high}, lower = better) → **${result.upAndGo.category}**`,
+      "",
+      result.chairStand.category === "Below Average" ||
+      result.upAndGo.category === "Below Average"
+        ? "⚠ Below-average score(s) — elevated functional decline / fall risk."
+        : "Functional capacity within normative range.",
+      "",
+      "_SSOT: ACSM 12th Ed. · Rikli & Jones_",
+    ].join("\n");
+  };
+
+  if (locked) {
+    return (
+      <section aria-labelledby="senior-heading">
+        <h3 id="senior-heading" className="text-xl font-bold text-foreground mb-1">
+          Senior Fitness (Rikli &amp; Jones)
+        </h3>
+        <p className="text-sm text-muted-foreground mb-5">
+          Functional fitness norms for adults 60–94 years.
+        </p>
+
+        <div
+          role="alert"
+          className="border-2 border-destructive rounded-lg p-4 bg-destructive/10"
+        >
+          <div className="flex items-start gap-2">
+            <Lock
+              className="h-6 w-6 text-destructive shrink-0 mt-0.5"
+              aria-hidden="true"
+            />
+            <div>
+              <p className="text-base font-extrabold uppercase tracking-wide text-destructive">
+                Test Locked
+              </p>
+              <p className="text-sm text-destructive font-semibold mt-1">
+                {lockedYesCount} PAR-Q+ Yes response
+                {lockedYesCount === 1 ? "" : "s"} detected.
+              </p>
+              <p className="text-xs text-foreground mt-2">
+                Per PAR-Q+ 2024 / ACSM 12th Ed., physical performance testing
+                is contraindicated until medical clearance is obtained. Resolve
+                PAR-Q+ flags or document clearance before proceeding.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <ClinicalNotes idSuffix="senior" />
+      </section>
+    );
+  }
 
   return (
     <section aria-labelledby="senior-heading">
@@ -174,11 +241,7 @@ const SeniorFitnessTab = () => {
       )}
 
       {result && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="mt-6 space-y-3"
-        >
+        <div role="status" aria-live="polite" className="mt-6 space-y-3">
           <div className="border-2 border-primary rounded-lg p-4 bg-secondary">
             <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
               Chair Stand · Age Band {result.band}
@@ -226,6 +289,8 @@ const SeniorFitnessTab = () => {
           )}
         </div>
       )}
+
+      <CopyAuditButton getMarkdown={buildMarkdown} disabled={!result} />
 
       <ClinicalNotes idSuffix="senior" />
     </section>
