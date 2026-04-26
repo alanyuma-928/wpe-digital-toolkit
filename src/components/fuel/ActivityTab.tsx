@@ -1,6 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ClinicalNotes from "@/components/biometrics/ClinicalNotes";
+import CopyAuditButton from "@/components/CopyAuditButton";
 import { ACTIVITY_OPTIONS, type ActivityLevel } from "./fuelTypes";
 
 interface ActivityTabProps {
@@ -97,6 +98,25 @@ const ActivityTab = ({ bmr, activity, setActivity, tdee }: ActivityTabProps) => 
           )}
         </>
       )}
+
+      <CopyAuditButton
+        getMarkdown={() => {
+          const opt = ACTIVITY_OPTIONS.find((o) => o.value === activity);
+          if (!bmr || !tdee || !opt) return "";
+          return [
+            "### WPE Audit · Total Daily Energy Expenditure",
+            "",
+            `- **RMR**: ${bmr} kcal/day`,
+            `- **PAGA Activity**: ${opt.label} (×${opt.multiplier})`,
+            `- _${opt.description}_`,
+            "",
+            `**TDEE**: ${tdee} kcal/day`,
+            "",
+            "_SSOT: PAGA 2018 (2nd Ed.) · Harris-Benedict_",
+          ].join("\n");
+        }}
+        disabled={!tdee}
+      />
 
       <ClinicalNotes idSuffix="activity" />
     </section>

@@ -1,4 +1,5 @@
 import ClinicalNotes from "@/components/biometrics/ClinicalNotes";
+import CopyAuditButton from "@/components/CopyAuditButton";
 import { splitMacros } from "./fuelTypes";
 
 interface MacroTabProps {
@@ -117,6 +118,27 @@ const MacroTab = ({ tdee }: MacroTabProps) => {
           </p>
         </>
       )}
+
+      <CopyAuditButton
+        getMarkdown={() =>
+          macros && tdee
+            ? [
+                "### WPE Audit · Macro Split (50 / 20 / 30)",
+                "",
+                `- **TDEE**: ${tdee} kcal/day`,
+                "",
+                "| Macro | % | kcal | grams |",
+                "|---|---:|---:|---:|",
+                ...rows.map(
+                  (r) => `| ${r.label} | ${r.pct} | ${r.kcal} | ${r.grams} g |`,
+                ),
+                "",
+                "_SSOT: DGA · Atwater (C/P 4 kcal·g⁻¹, F 9 kcal·g⁻¹)_",
+              ].join("\n")
+            : ""
+        }
+        disabled={!macros}
+      />
 
       <ClinicalNotes idSuffix="macros" />
     </section>
