@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useWeather } from "@/context/WeatherContext";
 
 interface CopyAuditButtonProps {
   /** Builds the markdown payload at click time so it always reflects current state. */
@@ -18,9 +19,11 @@ const CopyAuditButton = ({
 }: CopyAuditButtonProps) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const { auditBlock } = useWeather();
 
   const handleCopy = async () => {
-    const md = getMarkdown();
+    const base = getMarkdown();
+    const md = base ? `${base}\n${auditBlock}` : base;
     try {
       await navigator.clipboard.writeText(md);
       setCopied(true);

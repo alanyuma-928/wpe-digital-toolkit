@@ -4,8 +4,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
+import { Thermometer } from "lucide-react";
 import ClinicalNotes from "@/components/biometrics/ClinicalNotes";
 import CopyAuditButton from "@/components/CopyAuditButton";
+import { useWeather, THERMAL_REDLINE_F } from "@/context/WeatherContext";
 import { classifyVO2, type Sex } from "./vo2norms";
 
 interface CooperResult {
@@ -19,6 +21,7 @@ const fmtTime = (mm: number, ss: number) =>
   `${mm}:${ss.toString().padStart(2, "0")}`;
 
 const CooperTab = () => {
+  const { data: weather, outdoorLocked } = useWeather();
   const [runMin, setRunMin] = useState(12);
   const [runSec, setRunSec] = useState(45);
   const [age, setAge] = useState("");
@@ -78,8 +81,25 @@ const CooperTab = () => {
         Cooper 1.5-Mile Run
       </h3>
       <p className="text-sm text-muted-foreground mb-5">
-        Cooper (1968) · ACSM 12th Ed. norms.
+        Cooper (1968) · ACSM 12th Ed. norms. <span className="font-semibold">Outdoor field test.</span>
       </p>
+
+      {outdoorLocked && (
+        <div
+          role="alert"
+          className="mb-4 border-2 border-destructive rounded-lg p-3 bg-destructive/10 flex items-start gap-2"
+        >
+          <Thermometer className="h-5 w-5 text-destructive shrink-0 mt-0.5" aria-hidden="true" />
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-destructive">
+              Thermal Redline · Outdoor Test Disabled
+            </p>
+            <p className="text-[11px] text-destructive font-semibold mt-0.5">
+              KNYL {weather?.tempF ?? "—"}°F exceeds {THERMAL_REDLINE_F}°F threshold. Defer outdoor 1.5-mile run.
+            </p>
+          </div>
+        </div>
+      )}
 
       <form
         onSubmit={(e) => {
@@ -188,7 +208,11 @@ const CooperTab = () => {
         </fieldset>
 
         <div className="flex gap-3 pt-1">
-          <Button type="submit" className="flex-1 h-12 text-base font-semibold">
+          <Button
+            type="submit"
+            disabled={outdoorLocked}
+            className="flex-1 h-12 text-base font-semibold"
+          >
             Calculate VO₂max
           </Button>
           <Button
