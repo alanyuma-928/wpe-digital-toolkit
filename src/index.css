@@ -8,40 +8,41 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* WPE Digital Tool Kit — Navy on Creme */
-    --background: 60 56% 91%;        /* #F5F5DC creme */
-    --foreground: 215 100% 14%;      /* #002147 navy */
+    /* WPE Digital Tool Kit — Navy #000080 on Creme #FFFDD0, Gold #FFC72C accent.
+       Contrast Navy on Creme ≈ 14.6:1 (AAA). */
+    --background: 60 100% 91%;       /* #FFFDD0 creme */
+    --foreground: 240 100% 25%;      /* #000080 navy */
 
-    --card: 60 56% 95%;
-    --card-foreground: 215 100% 14%;
+    --card: 60 100% 94%;
+    --card-foreground: 240 100% 25%;
 
-    --popover: 60 56% 95%;
-    --popover-foreground: 215 100% 14%;
+    --popover: 60 100% 94%;
+    --popover-foreground: 240 100% 25%;
 
-    --primary: 215 100% 14%;         /* navy */
-    --primary-foreground: 60 56% 91%;
+    --primary: 240 100% 25%;         /* #000080 navy */
+    --primary-foreground: 60 100% 91%;
 
-    --secondary: 60 40% 85%;
-    --secondary-foreground: 215 100% 14%;
+    --secondary: 60 80% 86%;
+    --secondary-foreground: 240 100% 25%;
 
-    --muted: 60 30% 88%;
-    --muted-foreground: 215 40% 30%;
+    --muted: 60 60% 88%;
+    --muted-foreground: 240 60% 28%;
 
-    --accent: 215 100% 25%;
-    --accent-foreground: 60 56% 91%;
+    --accent: 45 100% 58%;           /* #FFC72C gold */
+    --accent-foreground: 240 100% 25%;
 
-    --destructive: 0 70% 40%;
-    --destructive-foreground: 60 56% 91%;
+    --destructive: 0 85% 38%;        /* high-contrast red for safety warnings */
+    --destructive-foreground: 60 100% 96%;
 
-    --border: 215 40% 75%;
-    --input: 215 40% 80%;
-    --ring: 215 100% 14%;
+    --border: 240 60% 70%;
+    --input: 240 50% 78%;
+    --ring: 240 100% 25%;
 
     --radius: 0.75rem;
 
-    --shadow-elegant: 0 10px 30px -10px hsl(215 100% 14% / 0.25);
-    --shadow-soft: 0 4px 12px -4px hsl(215 100% 14% / 0.15);
-    --gradient-navy: linear-gradient(135deg, hsl(215 100% 14%), hsl(215 100% 22%));
+    --shadow-elegant: 0 10px 30px -10px hsl(240 100% 25% / 0.25);
+    --shadow-soft: 0 4px 12px -4px hsl(240 100% 25% / 0.15);
+    --gradient-navy: linear-gradient(135deg, hsl(240 100% 25%), hsl(240 100% 32%));
 
     --sidebar-background: 0 0% 98%;
 
