@@ -47,6 +47,24 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        flag: {
+          green: {
+            DEFAULT: "hsl(var(--flag-green))",
+            foreground: "hsl(var(--flag-green-foreground))",
+          },
+          yellow: {
+            DEFAULT: "hsl(var(--flag-yellow))",
+            foreground: "hsl(var(--flag-yellow-foreground))",
+          },
+          red: {
+            DEFAULT: "hsl(var(--flag-red))",
+            foreground: "hsl(var(--flag-red-foreground))",
+          },
+          black: {
+            DEFAULT: "hsl(var(--flag-black))",
+            foreground: "hsl(var(--flag-black-foreground))",
+          },
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
