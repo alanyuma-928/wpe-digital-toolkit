@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AlertTriangle, ShieldCheck } from "lucide-react";
 import ClinicalNotes from "@/components/biometrics/ClinicalNotes";
 import CopyAuditButton from "@/components/CopyAuditButton";
+import LabHistorySaver from "@/components/safety/LabHistorySaver";
 
 // PAR-Q+ 2024 — 7 core general health questions
 export const PARQ_QUESTIONS: { id: string; text: string }[] = [
@@ -213,6 +214,12 @@ const PARQTab = ({ answers, setAnswers, submitted, setSubmitted }: PARQTabProps)
 
       <CopyAuditButton
         getMarkdown={buildMarkdown}
+        disabled={Object.keys(answers).length === 0}
+      />
+
+      <LabHistorySaver
+        source="PAR-Q+ Audit"
+        buildPayload={buildMarkdown}
         disabled={Object.keys(answers).length === 0}
       />
 

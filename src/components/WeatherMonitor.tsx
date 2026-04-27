@@ -1,41 +1,56 @@
-import { CloudSun, Droplets, Thermometer, AlertTriangle, RefreshCw, Sun } from "lucide-react";
+import { CloudSun, Droplets, Thermometer, AlertTriangle, RefreshCw, Sun, Flame } from "lucide-react";
 import { useWeather, THERMAL_REDLINE_F } from "@/context/WeatherContext";
 import { Button } from "@/components/ui/button";
+import SafetyFlagBadge from "@/components/SafetyFlagBadge";
 
 const WeatherMonitor = () => {
-  const { data, loading, error, refresh, outdoorLocked } = useWeather();
+  const { data, loading, error, refresh, outdoorLocked, flag } = useWeather();
+  const elevated = flag?.color === "Red" || flag?.color === "Black";
 
   return (
-    <div
+    <header
       role="region"
-      aria-label="KNYL weather monitor"
+      aria-label="KNYL environmental safety monitor"
       className={`w-full border-b-2 ${
-        outdoorLocked ? "border-destructive bg-destructive/10" : "border-primary bg-card"
+        elevated || outdoorLocked
+          ? "border-destructive bg-destructive/10"
+          : "border-primary bg-card"
       }`}
     >
-      <div className="mx-auto w-full max-w-[375px] px-4 py-2 flex items-center gap-3">
-        {outdoorLocked ? (
+      <div className="mx-auto w-full max-w-[375px] px-4 py-2 flex items-start gap-3">
+        {elevated || outdoorLocked ? (
           <AlertTriangle
-            className="h-5 w-5 text-destructive shrink-0"
+            className="h-5 w-5 text-destructive shrink-0 mt-0.5"
             aria-hidden="true"
           />
         ) : (
-          <CloudSun className="h-5 w-5 text-primary shrink-0" aria-hidden="true" />
+          <CloudSun className="h-5 w-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
         )}
 
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground leading-tight">
-            KNYL · NWS Live
-          </p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground leading-tight">
+              KNYL · NWS Live
+            </p>
+            {flag && <SafetyFlagBadge flag={flag} size="sm" />}
+          </div>
+
           {loading && !data ? (
-            <p className="text-sm font-bold text-foreground">Loading observation…</p>
+            <p className="text-sm font-bold text-foreground mt-0.5">Loading observation…</p>
           ) : error && !data ? (
-            <p className="text-sm font-bold text-destructive">Offline · {error}</p>
+            <p className="text-sm font-bold text-destructive mt-0.5">Offline · {error}</p>
           ) : data ? (
-            <p className="text-sm font-bold text-foreground tabular-nums flex flex-wrap items-center gap-x-3 gap-y-0.5">
+            <p className="text-sm font-bold text-foreground tabular-nums flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
               <span className="inline-flex items-center gap-1">
                 <Thermometer className="h-3.5 w-3.5" aria-hidden="true" />
                 {data.tempF ?? "—"}°F
+              </span>
+              <span
+                className="inline-flex items-center gap-1"
+                aria-label={`WBGT ${data.wbgtF ?? "unavailable"} degrees Fahrenheit`}
+              >
+                <Flame className="h-3.5 w-3.5" aria-hidden="true" />
+                WBGT {data.wbgtF ?? "—"}°F
               </span>
               <span className="inline-flex items-center gap-1">
                 <Droplets className="h-3.5 w-3.5" aria-hidden="true" />
@@ -55,6 +70,12 @@ const WeatherMonitor = () => {
               )}
             </p>
           ) : null}
+
+          {flag && elevated && (
+            <p className="text-[11px] font-semibold text-destructive mt-1">
+              {flag.guidance}
+            </p>
+          )}
         </div>
 
         <Button
@@ -68,7 +89,7 @@ const WeatherMonitor = () => {
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
         </Button>
       </div>
-    </div>
+    </header>
   );
 };
 
