@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle } from "lucide-react";
 import PARQTab from "@/components/safety/PARQTab";
 import SeniorFitnessTab from "@/components/safety/SeniorFitnessTab";
+import BurnTimeCard from "@/components/safety/BurnTimeCard";
 
 const Safety = () => {
   const [parqAnswers, setParqAnswers] = useState<Record<string, boolean>>({});
@@ -61,6 +62,8 @@ const Safety = () => {
             </div>
           </div>
         )}
+
+        <BurnTimeCard />
 
         <div id="main-content">
           <div className="bg-card border-2 border-primary rounded-lg p-4">

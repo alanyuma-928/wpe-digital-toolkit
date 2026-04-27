@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RMRTab from "@/components/fuel/RMRTab";
 import ActivityTab from "@/components/fuel/ActivityTab";
 import MacroTab from "@/components/fuel/MacroTab";
+import FoodFirstTab from "@/components/fuel/FoodFirstTab";
 import {
   ACTIVITY_OPTIONS,
   type ActivityLevel,
@@ -55,26 +56,32 @@ const Fuel = () => {
           <div className="bg-card border-2 border-primary rounded-lg p-4">
             <Tabs defaultValue="rmr" className="w-full">
               <TabsList
-                className="grid w-full grid-cols-3 h-12 bg-secondary border-2 border-primary/40 p-1"
+                className="grid w-full grid-cols-4 h-12 bg-secondary border-2 border-primary/40 p-1"
                 aria-label="Nutrition auditors"
               >
                 <TabsTrigger
                   value="rmr"
-                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="h-full text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   RMR
                 </TabsTrigger>
                 <TabsTrigger
                   value="activity"
-                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="h-full text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   Activity
                 </TabsTrigger>
                 <TabsTrigger
                   value="macros"
-                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="h-full text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   Macros
+                </TabsTrigger>
+                <TabsTrigger
+                  value="usda"
+                  className="h-full text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  USDA
                 </TabsTrigger>
               </TabsList>
 
@@ -102,6 +109,9 @@ const Fuel = () => {
               </TabsContent>
               <TabsContent value="macros" className="mt-5">
                 <MacroTab tdee={tdee} />
+              </TabsContent>
+              <TabsContent value="usda" className="mt-5">
+                <FoodFirstTab tdee={tdee} />
               </TabsContent>
             </Tabs>
           </div>
