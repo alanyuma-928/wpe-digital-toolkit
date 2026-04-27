@@ -15,12 +15,26 @@ const NWS_ENDPOINT = `https://api.weather.gov/stations/${STATION_ID}/observation
 const EPA_ZIP = "85365";
 const EPA_HOURLY_ENDPOINT = `https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/ZIP/${EPA_ZIP}/JSON`;
 const EPA_DAILY_ENDPOINT = `https://data.epa.gov/efservice/getEnvirofactsUVDAILY/ZIP/${EPA_ZIP}/JSON`;
-/** Per NWS API ToS — identify the client (browsers may strip in fetch, but kept for parity). */
+/** Per NWS API ToS — identify the client. */
 const USER_AGENT = "(WPE-Digital-Tool-Kit, alan.pruitt@azwestern.edu)";
-/** Outdoor-testing thermal redline. */
+/** Outdoor-testing thermal redline (legacy raw-temp gate; flag system supersedes for clinical). */
 export const THERMAL_REDLINE_F = 115;
-/** Refresh cadence: NWS observations update ~hourly. */
-const REFRESH_MS = 10 * 60 * 1000;
+/** v1.2: 60-minute fetch cycle per DTK Logic Master Protocol. */
+const REFRESH_MS = 60 * 60 * 1000;
+
+export type FlagColor = "Green" | "Yellow" | "Red" | "Black";
+/** WCAG multi-modal: pair color with shape so colorblind users get the same signal. */
+export type FlagShape = "●" | "▲" | "■" | "⬢";
+
+export interface SafetyFlag {
+  color: FlagColor;
+  shape: FlagShape;
+  shapeName: "Circle" | "Triangle" | "Square" | "Octagon";
+  label: string;
+  guidance: string;
+  /** Drives Lab History safety gate. */
+  requiresAudit: boolean;
+}
 
 export interface BurnTimeAdvisory {
   category: "Low" | "Moderate" | "High" | "Very High" | "Extreme";
@@ -35,10 +49,11 @@ export interface WeatherSnapshot {
   humidity: number | null;
   rawMessage: string | null;
   observedAt: string | null;
-  /** EPA UV Index at the closest forecast hour (or daily peak fallback). */
   uvIndex: number | null;
   uvSource: "hourly" | "daily" | null;
   uvObservedAt: string | null;
+  /** Wet Bulb Globe Temperature, °F (estimated from Temp + RH). */
+  wbgtF: number | null;
 }
 
 interface WeatherContextValue {
@@ -48,6 +63,8 @@ interface WeatherContextValue {
   refresh: () => void;
   outdoorLocked: boolean;
   burnTime: BurnTimeAdvisory | null;
+  /** Multi-Modal Safety Flag (color + WCAG shape). */
+  flag: SafetyFlag | null;
   /** Markdown block for inclusion in audit summaries. */
   auditBlock: string;
 }
@@ -55,6 +72,107 @@ interface WeatherContextValue {
 const WeatherContext = createContext<WeatherContextValue | undefined>(undefined);
 
 const cToF = (c: number) => (c * 9) / 5 + 32;
+const fToC = (f: number) => ((f - 32) * 5) / 9;
+
+/**
+ * Estimate WBGT (°F) from ambient dry-bulb temp (°F) and relative humidity (%).
+ * Uses Australian BoM simplified WBGT approximation (no globe radiometer):
+ *   Tw  = 0.567·Ta + 0.393·e + 3.94   (Stull 2011, °C)
+ *   WBGT ≈ 0.7·Tw + 0.3·Ta            (sun-shielded simplified)
+ * where e = vapor pressure (hPa) = (rh/100) · 6.105·exp(17.27·Ta/(237.7+Ta))
+ * Returns °F, rounded to 1 decimal.
+ */
+export const estimateWBGT = (
+  tempF: number | null,
+  rh: number | null,
+): number | null => {
+  if (tempF === null || rh === null || Number.isNaN(tempF) || Number.isNaN(rh)) {
+    return null;
+  }
+  const Ta = fToC(tempF); // °C
+  const e = (rh / 100) * 6.105 * Math.exp((17.27 * Ta) / (237.7 + Ta));
+  const Tw = 0.567 * Ta + 0.393 * e + 3.94; // wet-bulb °C
+  const wbgtC = 0.7 * Tw + 0.3 * Ta; // simplified shielded WBGT °C
+  return Math.round(cToF(wbgtC) * 10) / 10;
+};
+
+/**
+ * Multi-Modal Flag derived from the more conservative of WBGT band and UV band.
+ * WBGT bands (°F) — ACSM/OSHA heat-stress guidance:
+ *   <82 Green · 82–86.9 Yellow · 87–89.9 Red · ≥90 Black
+ * UV bands escalate to Red at ≥8 (Very High) and Black at ≥11 (Extreme).
+ */
+export const deriveFlag = (
+  wbgtF: number | null,
+  uv: number | null,
+): SafetyFlag | null => {
+  if (wbgtF === null && uv === null) return null;
+
+  const rank: Record<FlagColor, number> = {
+    Green: 0,
+    Yellow: 1,
+    Red: 2,
+    Black: 3,
+  };
+
+  let heat: FlagColor = "Green";
+  if (wbgtF !== null) {
+    if (wbgtF >= 90) heat = "Black";
+    else if (wbgtF >= 87) heat = "Red";
+    else if (wbgtF >= 82) heat = "Yellow";
+  }
+
+  let uvBand: FlagColor = "Green";
+  if (uv !== null) {
+    if (uv >= 11) uvBand = "Black";
+    else if (uv >= 8) uvBand = "Red";
+    else if (uv >= 6) uvBand = "Yellow";
+  }
+
+  const color: FlagColor = rank[heat] >= rank[uvBand] ? heat : uvBand;
+
+  switch (color) {
+    case "Black":
+      return {
+        color: "Black",
+        shape: "⬢",
+        shapeName: "Octagon",
+        label: "Black Flag · Cease Outdoor Activity",
+        guidance:
+          "Extreme heat/UV. Cancel outdoor testing. Clinical Safety Audit required before logging Lab History.",
+        requiresAudit: true,
+      };
+    case "Red":
+      return {
+        color: "Red",
+        shape: "■",
+        shapeName: "Square",
+        label: "Red Flag · High Risk",
+        guidance:
+          "High heat/UV. Restrict outdoor exertion. Clinical Safety Audit required before logging Lab History.",
+        requiresAudit: true,
+      };
+    case "Yellow":
+      return {
+        color: "Yellow",
+        shape: "▲",
+        shapeName: "Triangle",
+        label: "Yellow Flag · Caution",
+        guidance:
+          "Moderate heat/UV. Hydrate, monitor symptoms, consider work:rest cycles.",
+        requiresAudit: false,
+      };
+    default:
+      return {
+        color: "Green",
+        shape: "●",
+        shapeName: "Circle",
+        label: "Green Flag · Normal",
+        guidance: "Conditions within standard testing parameters.",
+        requiresAudit: false,
+      };
+  }
+};
 
 /** EPA UV Index → NOAA/EPA Sun Safety burn-time advisory. */
 export const burnTimeFromUV = (uv: number | null): BurnTimeAdvisory | null => {
@@ -144,7 +262,6 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
 
-    // NWS — primary
     let nws: Partial<WeatherSnapshot> = {
       tempC: null,
       tempF: null,
@@ -185,16 +302,12 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
       setError(e instanceof Error ? e.message : "Weather fetch failed");
     }
 
-    // EPA — UV Index (hourly preferred, daily fallback)
     let uvIndex: number | null = null;
     let uvSource: "hourly" | "daily" | null = null;
     let uvObservedAt: string | null = null;
     try {
       const res = await fetch(EPA_HOURLY_ENDPOINT, {
-        headers: {
-          Accept: "application/json",
-          "User-Agent": USER_AGENT,
-        },
+        headers: { Accept: "application/json", "User-Agent": USER_AGENT },
       });
       if (res.ok) {
         const rows: EpaHourlyRow[] = await res.json();
@@ -211,16 +324,12 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
     if (uvIndex === null) {
       try {
         const res = await fetch(EPA_DAILY_ENDPOINT, {
-          headers: {
-            Accept: "application/json",
-            "User-Agent": USER_AGENT,
-          },
+          headers: { Accept: "application/json", "User-Agent": USER_AGENT },
         });
         if (res.ok) {
           const rows: EpaDailyRow[] = await res.json();
           const r = Array.isArray(rows) ? rows[0] : null;
-          const v =
-            r && r.UV_INDEX !== undefined ? Number(r.UV_INDEX) : NaN;
+          const v = r && r.UV_INDEX !== undefined ? Number(r.UV_INDEX) : NaN;
           if (!Number.isNaN(v)) {
             uvIndex = v;
             uvObservedAt = r?.DATE ?? null;
@@ -228,9 +337,11 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
           }
         }
       } catch {
-        // swallow — UV remains null
+        // swallow
       }
     }
+
+    const wbgtF = estimateWBGT(nws.tempF ?? null, nws.humidity ?? null);
 
     setData({
       station: STATION_ID,
@@ -242,6 +353,7 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
       uvIndex,
       uvSource,
       uvObservedAt,
+      wbgtF,
     });
     setLoading(false);
   }, []);
@@ -260,6 +372,11 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
     [data],
   );
 
+  const flag = useMemo(
+    () => (data ? deriveFlag(data.wbgtF, data.uvIndex) : null),
+    [data],
+  );
+
   const auditBlock = useMemo(() => {
     if (!data) return "";
     const lines = [
@@ -270,16 +387,20 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
         data.tempC !== null ? ` (${Math.round(data.tempC * 10) / 10}°C)` : ""
       }`,
       `- Humidity: ${data.humidity ?? "n/a"}%`,
+      `- WBGT (est.): ${data.wbgtF ?? "n/a"}°F`,
       data.rawMessage ? `- METAR: \`${data.rawMessage}\`` : "- METAR: n/a",
       `**EPA UV Index** (ZIP ${EPA_ZIP} · ${data.uvSource ?? "n/a"} · ${data.uvObservedAt ?? "n/a"})`,
       `- UV: ${data.uvIndex ?? "n/a"}${burnTime ? ` (${burnTime.category})` : ""}`,
       burnTime ? `- Burn Time: ${burnTime.minutes} — ${burnTime.message}` : "",
+      flag
+        ? `**Multi-Modal Flag**: ${flag.shape} ${flag.color} (${flag.shapeName}) — ${flag.guidance}`
+        : "",
       outdoorLocked
         ? `- ⚠ Thermal redline exceeded (>${THERMAL_REDLINE_F}°F) — outdoor testing disabled.`
         : "",
     ].filter(Boolean);
     return lines.join("\n");
-  }, [data, outdoorLocked, burnTime]);
+  }, [data, outdoorLocked, burnTime, flag]);
 
   const value: WeatherContextValue = {
     data,
@@ -288,6 +409,7 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
     refresh: fetchObs,
     outdoorLocked: !!outdoorLocked,
     burnTime,
+    flag,
     auditBlock,
   };
 
