@@ -217,6 +217,12 @@ const PARQTab = ({ answers, setAnswers, submitted, setSubmitted }: PARQTabProps)
         disabled={Object.keys(answers).length === 0}
       />
 
+      <LabHistorySaver
+        source="PAR-Q+ Audit"
+        buildPayload={buildMarkdown}
+        disabled={Object.keys(answers).length === 0}
+      />
+
       <ClinicalNotes idSuffix="parq" />
     </section>
   );
