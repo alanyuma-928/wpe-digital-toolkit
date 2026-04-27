@@ -1,4 +1,4 @@
-import { CloudSun, Droplets, Thermometer, AlertTriangle, RefreshCw } from "lucide-react";
+import { CloudSun, Droplets, Thermometer, AlertTriangle, RefreshCw, Sun } from "lucide-react";
 import { useWeather, THERMAL_REDLINE_F } from "@/context/WeatherContext";
 import { Button } from "@/components/ui/button";
 
@@ -40,6 +40,13 @@ const WeatherMonitor = () => {
               <span className="inline-flex items-center gap-1">
                 <Droplets className="h-3.5 w-3.5" aria-hidden="true" />
                 {data.humidity ?? "—"}%
+              </span>
+              <span
+                className="inline-flex items-center gap-1"
+                aria-label={`UV Index ${data.uvIndex ?? "unavailable"}`}
+              >
+                <Sun className="h-3.5 w-3.5" aria-hidden="true" />
+                UV {data.uvIndex ?? "—"}
               </span>
               {outdoorLocked && (
                 <span className="text-[10px] font-extrabold uppercase tracking-wide text-destructive">
