@@ -21,6 +21,11 @@ const USER_AGENT = "(WPE-Digital-Tool-Kit, alan.pruitt@azwestern.edu)";
 export const THERMAL_REDLINE_F = 115;
 /** v1.2: 60-minute fetch cycle per DTK Logic Master Protocol. */
 const REFRESH_MS = 60 * 60 * 1000;
+/** AirNow API — current observations by ZIP. Personal key (client-side, low-volume). */
+const AIRNOW_API_KEY = "C46D315C-21EB-48DC-9A8D-85727BE7A82F";
+const AIRNOW_ENDPOINT = `https://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=${EPA_ZIP}&distance=25&API_KEY=${AIRNOW_API_KEY}`;
+/** v1.5: AQI override threshold — forces Black/Octagon "Indoor Pivot Required". */
+export const AQI_INDOOR_PIVOT = 100;
 
 export type FlagColor = "Green" | "Yellow" | "Red" | "Black";
 /** WCAG multi-modal: pair color with shape so colorblind users get the same signal. */
