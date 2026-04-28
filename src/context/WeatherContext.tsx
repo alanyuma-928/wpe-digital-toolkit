@@ -294,7 +294,6 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
       tempC: null,
       tempF: null,
       humidity: null,
-      rawMessage: null,
       observedAt: null,
     };
     try {
@@ -313,17 +312,13 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
         typeof p?.relativeHumidity?.value === "number"
           ? Math.round(p.relativeHumidity.value)
           : null;
-      const rawMessage: string | null =
-        typeof p?.rawMessage === "string" && p.rawMessage.length > 0
-          ? p.rawMessage
-          : null;
+      // v1.5: METAR/aviation strings deprecated — no rawMessage, altimeter, or ceiling capture.
       const observedAt: string | null =
         typeof p?.timestamp === "string" ? p.timestamp : null;
       nws = {
         tempC,
         tempF: tempC !== null ? Math.round(cToF(tempC) * 10) / 10 : null,
         humidity,
-        rawMessage,
         observedAt,
       };
     } catch (e) {
