@@ -120,8 +120,21 @@ export const estimateWBGT = (
 export const deriveFlag = (
   wbgtF: number | null,
   uv: number | null,
+  aqi: number | null = null,
 ): SafetyFlag | null => {
-  if (wbgtF === null && uv === null) return null;
+  if (wbgtF === null && uv === null && aqi === null) return null;
+
+  // v1.5 override: AQI > 100 forces Black/Octagon "Indoor Pivot Required".
+  if (aqi !== null && aqi > AQI_INDOOR_PIVOT) {
+    return {
+      color: "Black",
+      shape: "⬢",
+      shapeName: "Octagon",
+      label: "Black Flag · Indoor Pivot Required",
+      guidance: `High AQI (${aqi}): Indoor Pivot Required. Clinical Safety Audit required before logging Lab History.`,
+      requiresAudit: true,
+    };
+  }
 
   const rank: Record<FlagColor, number> = {
     Green: 0,
