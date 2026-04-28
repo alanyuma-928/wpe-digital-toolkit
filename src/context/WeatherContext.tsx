@@ -47,18 +47,28 @@ export interface BurnTimeAdvisory {
   message: string;
 }
 
+export interface AQISnapshot {
+  value: number;
+  category: string; // "Good" | "Moderate" | "Unhealthy for Sensitive Groups" | ...
+  parameter: string; // "PM10" | "PM2.5" | "O3"
+  observedAt: string | null;
+}
+
 export interface WeatherSnapshot {
   station: string;
   tempF: number | null;
   tempC: number | null;
   humidity: number | null;
-  rawMessage: string | null;
   observedAt: string | null;
   uvIndex: number | null;
   uvSource: "hourly" | "daily" | null;
   uvObservedAt: string | null;
   /** Wet Bulb Globe Temperature, °F (estimated from Temp + RH). */
   wbgtF: number | null;
+  /** Primary AQI (PM-10 preferred for Yuma; falls back to highest reported). */
+  aqi: AQISnapshot | null;
+  /** All AQI observations returned by AirNow (PM10, PM2.5, O3...). */
+  aqiAll: AQISnapshot[];
 }
 
 interface WeatherContextValue {
