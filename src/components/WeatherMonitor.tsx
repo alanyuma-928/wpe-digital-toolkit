@@ -1,4 +1,4 @@
-import { CloudSun, Droplets, Thermometer, AlertTriangle, RefreshCw, Sun, Flame } from "lucide-react";
+import { CloudSun, Droplets, Thermometer, AlertTriangle, RefreshCw, Sun, Flame, Wind } from "lucide-react";
 import { useWeather, THERMAL_REDLINE_F } from "@/context/WeatherContext";
 import { Button } from "@/components/ui/button";
 import SafetyFlagBadge from "@/components/SafetyFlagBadge";
