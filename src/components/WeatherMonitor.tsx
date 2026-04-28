@@ -63,6 +63,22 @@ const WeatherMonitor = () => {
                 <Sun className="h-3.5 w-3.5" aria-hidden="true" />
                 UV {data.uvIndex ?? "—"}
               </span>
+              <span
+                className="inline-flex items-center gap-1"
+                aria-label={
+                  data.aqi
+                    ? `Air Quality Index ${data.aqi.value}, ${data.aqi.category}, ${data.aqi.parameter}`
+                    : "Air Quality Index unavailable"
+                }
+              >
+                <Wind className="h-3.5 w-3.5" aria-hidden="true" />
+                AQI {data.aqi?.value ?? "—"}
+                {data.aqi?.parameter ? (
+                  <span className="text-[10px] font-semibold text-muted-foreground">
+                    {data.aqi.parameter}
+                  </span>
+                ) : null}
+              </span>
               {outdoorLocked && (
                 <span className="text-[10px] font-extrabold uppercase tracking-wide text-destructive">
                   Redline &gt;{THERMAL_REDLINE_F}°F
