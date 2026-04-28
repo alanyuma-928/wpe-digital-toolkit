@@ -21,6 +21,11 @@ const USER_AGENT = "(WPE-Digital-Tool-Kit, alan.pruitt@azwestern.edu)";
 export const THERMAL_REDLINE_F = 115;
 /** v1.2: 60-minute fetch cycle per DTK Logic Master Protocol. */
 const REFRESH_MS = 60 * 60 * 1000;
+/** AirNow API — current observations by ZIP. Personal key (client-side, low-volume). */
+const AIRNOW_API_KEY = "C46D315C-21EB-48DC-9A8D-85727BE7A82F";
+const AIRNOW_ENDPOINT = `https://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=${EPA_ZIP}&distance=25&API_KEY=${AIRNOW_API_KEY}`;
+/** v1.5: AQI override threshold — forces Black/Octagon "Indoor Pivot Required". */
+export const AQI_INDOOR_PIVOT = 100;
 
 export type FlagColor = "Green" | "Yellow" | "Red" | "Black";
 /** WCAG multi-modal: pair color with shape so colorblind users get the same signal. */
@@ -42,18 +47,28 @@ export interface BurnTimeAdvisory {
   message: string;
 }
 
+export interface AQISnapshot {
+  value: number;
+  category: string; // "Good" | "Moderate" | "Unhealthy for Sensitive Groups" | ...
+  parameter: string; // "PM10" | "PM2.5" | "O3"
+  observedAt: string | null;
+}
+
 export interface WeatherSnapshot {
   station: string;
   tempF: number | null;
   tempC: number | null;
   humidity: number | null;
-  rawMessage: string | null;
   observedAt: string | null;
   uvIndex: number | null;
   uvSource: "hourly" | "daily" | null;
   uvObservedAt: string | null;
   /** Wet Bulb Globe Temperature, °F (estimated from Temp + RH). */
   wbgtF: number | null;
+  /** Primary AQI (PM-10 preferred for Yuma; falls back to highest reported). */
+  aqi: AQISnapshot | null;
+  /** All AQI observations returned by AirNow (PM10, PM2.5, O3...). */
+  aqiAll: AQISnapshot[];
 }
 
 interface WeatherContextValue {
@@ -105,8 +120,21 @@ export const estimateWBGT = (
 export const deriveFlag = (
   wbgtF: number | null,
   uv: number | null,
+  aqi: number | null = null,
 ): SafetyFlag | null => {
-  if (wbgtF === null && uv === null) return null;
+  if (wbgtF === null && uv === null && aqi === null) return null;
+
+  // v1.5 override: AQI > 100 forces Black/Octagon "Indoor Pivot Required".
+  if (aqi !== null && aqi > AQI_INDOOR_PIVOT) {
+    return {
+      color: "Black",
+      shape: "⬢",
+      shapeName: "Octagon",
+      label: "Black Flag · Indoor Pivot Required",
+      guidance: `High AQI (${aqi}): Indoor Pivot Required. Clinical Safety Audit required before logging Lab History.`,
+      requiresAudit: true,
+    };
+  }
 
   const rank: Record<FlagColor, number> = {
     Green: 0,
@@ -253,6 +281,25 @@ const pickCurrentUV = (
   return best ? { uv: best.uv, observedAt: best.observedAt } : null;
 };
 
+interface AirNowRow {
+  DateObserved?: string;
+  HourObserved?: number;
+  LocalTimeZone?: string;
+  ParameterName?: string;
+  AQI?: number;
+  Category?: { Number?: number; Name?: string };
+}
+
+/** Fallback AQI category mapping (EPA breakpoints) when AirNow omits Category.Name. */
+const aqiCategoryFromValue = (v: number): string => {
+  if (v <= 50) return "Good";
+  if (v <= 100) return "Moderate";
+  if (v <= 150) return "Unhealthy for Sensitive Groups";
+  if (v <= 200) return "Unhealthy";
+  if (v <= 300) return "Very Unhealthy";
+  return "Hazardous";
+};
+
 export const WeatherProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<WeatherSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
@@ -266,7 +313,6 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
       tempC: null,
       tempF: null,
       humidity: null,
-      rawMessage: null,
       observedAt: null,
     };
     try {
@@ -285,17 +331,13 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
         typeof p?.relativeHumidity?.value === "number"
           ? Math.round(p.relativeHumidity.value)
           : null;
-      const rawMessage: string | null =
-        typeof p?.rawMessage === "string" && p.rawMessage.length > 0
-          ? p.rawMessage
-          : null;
+      // v1.5: METAR/aviation strings deprecated — no rawMessage, altimeter, or ceiling capture.
       const observedAt: string | null =
         typeof p?.timestamp === "string" ? p.timestamp : null;
       nws = {
         tempC,
         tempF: tempC !== null ? Math.round(cToF(tempC) * 10) / 10 : null,
         humidity,
-        rawMessage,
         observedAt,
       };
     } catch (e) {
@@ -341,6 +383,46 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
+    // AirNow AQI fetch (PM-10 preferred for Yuma's desert dust environment).
+    let aqi: AQISnapshot | null = null;
+    let aqiAll: AQISnapshot[] = [];
+    try {
+      const res = await fetch(AIRNOW_ENDPOINT, {
+        headers: { Accept: "application/json", "User-Agent": USER_AGENT },
+      });
+      if (res.ok) {
+        const rows: AirNowRow[] = await res.json();
+        if (Array.isArray(rows) && rows.length > 0) {
+          aqiAll = rows
+            .filter(
+              (r) =>
+                typeof r?.AQI === "number" &&
+                typeof r?.ParameterName === "string",
+            )
+            .map((r) => ({
+              value: r.AQI as number,
+              category:
+                (r.Category && typeof r.Category.Name === "string"
+                  ? r.Category.Name
+                  : aqiCategoryFromValue(r.AQI as number)),
+              parameter: r.ParameterName as string,
+              observedAt:
+                r.DateObserved && r.HourObserved !== undefined
+                  ? `${r.DateObserved.trim()} ${String(r.HourObserved).padStart(2, "0")}:00 ${r.LocalTimeZone ?? ""}`.trim()
+                  : null,
+            }));
+          // Prefer PM10 for Yuma; fall back to highest reported value.
+          const pm10 = aqiAll.find((a) => /pm.?10/i.test(a.parameter));
+          aqi = pm10 ?? aqiAll.reduce<AQISnapshot | null>(
+            (max, cur) => (max === null || cur.value > max.value ? cur : max),
+            null,
+          );
+        }
+      }
+    } catch {
+      // AQI optional — flag still derives from WBGT/UV.
+    }
+
     const wbgtF = estimateWBGT(nws.tempF ?? null, nws.humidity ?? null);
 
     setData({
@@ -348,12 +430,13 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
       tempC: nws.tempC ?? null,
       tempF: nws.tempF ?? null,
       humidity: nws.humidity ?? null,
-      rawMessage: nws.rawMessage ?? null,
       observedAt: nws.observedAt ?? null,
       uvIndex,
       uvSource,
       uvObservedAt,
       wbgtF,
+      aqi,
+      aqiAll,
     });
     setLoading(false);
   }, []);
@@ -373,7 +456,7 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const flag = useMemo(
-    () => (data ? deriveFlag(data.wbgtF, data.uvIndex) : null),
+    () => (data ? deriveFlag(data.wbgtF, data.uvIndex, data.aqi?.value ?? null) : null),
     [data],
   );
 
@@ -388,10 +471,18 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
       }`,
       `- Humidity: ${data.humidity ?? "n/a"}%`,
       `- WBGT (est.): ${data.wbgtF ?? "n/a"}°F`,
-      data.rawMessage ? `- METAR: \`${data.rawMessage}\`` : "- METAR: n/a",
       `**EPA UV Index** (ZIP ${EPA_ZIP} · ${data.uvSource ?? "n/a"} · ${data.uvObservedAt ?? "n/a"})`,
       `- UV: ${data.uvIndex ?? "n/a"}${burnTime ? ` (${burnTime.category})` : ""}`,
       burnTime ? `- Burn Time: ${burnTime.minutes} — ${burnTime.message}` : "",
+      `**AirNow AQI** (ZIP ${EPA_ZIP} · ${data.aqi?.observedAt ?? "n/a"})`,
+      data.aqi
+        ? `- AQI: ${data.aqi.value} - ${data.aqi.category} (${data.aqi.parameter})`
+        : "- AQI: n/a",
+      ...(data.aqiAll.length > 1
+        ? data.aqiAll
+            .filter((a) => a !== data.aqi)
+            .map((a) => `  - ${a.parameter}: ${a.value} (${a.category})`)
+        : []),
       flag
         ? `**Multi-Modal Flag**: ${flag.shape} ${flag.color} (${flag.shapeName}) — ${flag.guidance}`
         : "",
