@@ -281,6 +281,25 @@ const pickCurrentUV = (
   return best ? { uv: best.uv, observedAt: best.observedAt } : null;
 };
 
+interface AirNowRow {
+  DateObserved?: string;
+  HourObserved?: number;
+  LocalTimeZone?: string;
+  ParameterName?: string;
+  AQI?: number;
+  Category?: { Number?: number; Name?: string };
+}
+
+/** Fallback AQI category mapping (EPA breakpoints) when AirNow omits Category.Name. */
+const aqiCategoryFromValue = (v: number): string => {
+  if (v <= 50) return "Good";
+  if (v <= 100) return "Moderate";
+  if (v <= 150) return "Unhealthy for Sensitive Groups";
+  if (v <= 200) return "Unhealthy";
+  if (v <= 300) return "Very Unhealthy";
+  return "Hazardous";
+};
+
 export const WeatherProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<WeatherSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
