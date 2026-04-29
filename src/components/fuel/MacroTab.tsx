@@ -4,6 +4,7 @@ import CopyAuditButton from "@/components/CopyAuditButton";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { splitMacros } from "./fuelTypes";
+import SipTimer from "./SipTimer";
 
 interface MacroTabProps {
   tdee: number | null;
@@ -271,13 +272,16 @@ const MacroTab = ({ tdee }: MacroTabProps) => {
         </div>
 
         {travel && (
-          <p
-            role="status"
-            aria-live="polite"
-            className="mt-2 text-sm font-semibold text-foreground border-l-4 border-accent pl-3 py-1"
-          >
-            🧳 {active.travelBlurb}
-          </p>
+          <>
+            <p
+              role="status"
+              aria-live="polite"
+              className="mt-2 text-sm font-semibold text-foreground border-l-4 border-accent pl-3 py-1"
+            >
+              🧳 {active.travelBlurb}
+            </p>
+            <SipTimer />
+          </>
         )}
       </fieldset>
 
