@@ -2,6 +2,7 @@ import { CloudSun, Droplets, Thermometer, AlertTriangle, RefreshCw, Sun, Flame, 
 import { useWeather, THERMAL_REDLINE_F } from "@/context/WeatherContext";
 import { Button } from "@/components/ui/button";
 import SafetyFlagBadge from "@/components/SafetyFlagBadge";
+import SimpleGuide from "@/components/SimpleGuide";
 
 const WeatherMonitor = () => {
   const { data, loading, error, refresh, outdoorLocked, flag } = useWeather();
@@ -94,16 +95,19 @@ const WeatherMonitor = () => {
           )}
         </div>
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={refresh}
-          aria-label="Refresh KNYL observation"
-          className="h-8 w-8 text-foreground"
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-        </Button>
+        <div className="flex flex-col gap-1 shrink-0">
+          <SimpleGuide />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={refresh}
+            aria-label="Refresh KNYL observation"
+            className="h-8 w-8 text-foreground"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+        </div>
       </div>
     </header>
   );
