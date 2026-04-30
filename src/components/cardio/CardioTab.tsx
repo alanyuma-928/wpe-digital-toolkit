@@ -14,7 +14,7 @@ import { AlertTriangle } from "lucide-react";
 import CopyAuditButton from "@/components/CopyAuditButton";
 import { useWeather } from "@/context/WeatherContext";
 
-type Activity = "Run" | "Ruck" | "Bike" | "Row";
+type Activity = "Walk" | "Run" | "Ruck" | "Bike" | "Row" | "Swim";
 type Zone = "Light" | "Moderate" | "Vigorous";
 
 interface CardioSession {
@@ -262,10 +262,12 @@ const CardioTab = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Run">Run</SelectItem>
-              <SelectItem value="Ruck">Ruck</SelectItem>
+              <SelectItem value="Walk">Walk (low impact)</SelectItem>
+              <SelectItem value="Swim">Swim (low impact)</SelectItem>
               <SelectItem value="Bike">Bike</SelectItem>
               <SelectItem value="Row">Row</SelectItem>
+              <SelectItem value="Run">Run</SelectItem>
+              <SelectItem value="Ruck">Ruck</SelectItem>
             </SelectContent>
           </Select>
         </div>
