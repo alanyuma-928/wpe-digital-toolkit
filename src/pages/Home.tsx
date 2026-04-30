@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Activity, Gauge, Apple, ShieldCheck, type LucideIcon } from "lucide-react";
+import { Activity, Gauge, Apple, ShieldCheck, Dumbbell, type LucideIcon } from "lucide-react";
 
 interface ModuleTile {
   to: string;
@@ -41,6 +41,14 @@ const modules: ModuleTile[] = [
     subtitle: "PAR-Q+ · Sr. Fitness",
     ariaLabel: "Open The Safety Box: PAR-Q+ and Senior Fitness screening",
     Icon: ShieldCheck,
+    enabled: true,
+  },
+  {
+    to: "/strength",
+    title: "The Strength Box",
+    subtitle: "Push · Pull · Hinge · Squat",
+    ariaLabel: "Open The Strength Box: movement-pattern strength auditor",
+    Icon: Dumbbell,
     enabled: true,
   },
 ];
@@ -118,10 +126,15 @@ const Home = () => {
           </ul>
         </section>
 
-        <footer className="mt-8 pt-4 border-t-2 border-primary/40 text-center">
-          <p className="text-[11px] text-muted-foreground">
+        <footer
+          role="contentinfo"
+          className="mt-8 pt-4 border-t-2 border-primary/40 text-center"
+        >
+          <p className="text-[11px] leading-relaxed text-foreground">
             Clinical screening tools. Interpret results per ACSM 12th Ed. &amp;
             PAGA 2018 (2nd Ed.).
+            <br />
+            CC BY-NC 4.0 · Accessibility: WCAG 2.1 AA
           </p>
         </footer>
       </div>

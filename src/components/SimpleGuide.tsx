@@ -160,6 +160,45 @@ const SimpleGuide = () => {
                 </p>
               </section>
 
+              <section aria-labelledby="g-strength">
+                <h3 id="g-strength" className="text-base font-bold mb-1">
+                  The Strength Box (lifting)
+                </h3>
+                <p>
+                  Pick the kind of move you are doing:
+                </p>
+                <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                  <li><strong>Push</strong> — push weight away (like a bench press).</li>
+                  <li><strong>Pull</strong> — pull weight toward you (like a row).</li>
+                  <li><strong>Hinge</strong> — bend at the hips (like a deadlift).</li>
+                  <li><strong>Squat</strong> — bend your knees down and stand up.</li>
+                </ul>
+                <p className="mt-2">
+                  Type how much weight, how many reps, and how clean your form
+                  was (10 = perfect, 7 = okay, 0 = not safe). Tap{" "}
+                  <strong>Log Set</strong>. The app shows your{" "}
+                  <strong>Relative Strength</strong> — how heavy the weight is
+                  compared to your body.
+                </p>
+                <p className="mt-2">
+                  After you log a set, a 90-second <strong>Rest Timer</strong>{" "}
+                  starts. It says, "Good set! Rest for a moment..." Wait until
+                  it ends before your next set.
+                </p>
+              </section>
+
+              <section aria-labelledby="g-water">
+                <h3 id="g-water" className="text-base font-bold mb-1">
+                  The Travel Water Timer
+                </h3>
+                <p>
+                  When <strong>Travel Mode</strong> is on, a circle timer counts
+                  down 60 minutes. When it ends, it tells you to drink 8–12 oz
+                  of water. Tap <strong>Refill</strong> after you drink to start
+                  the hour again.
+                </p>
+              </section>
+
               <section aria-labelledby="g-copy">
                 <h3 id="g-copy" className="text-base font-bold mb-1">
                   The "Copy" button
