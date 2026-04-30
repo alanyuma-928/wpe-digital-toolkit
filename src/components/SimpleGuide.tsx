@@ -199,6 +199,39 @@ const SimpleGuide = () => {
                 </p>
               </section>
 
+              <section aria-labelledby="g-cardio">
+                <h3 id="g-cardio" className="text-base font-bold mb-1">
+                  The Cardio Box (heart workouts)
+                </h3>
+                <p>
+                  This box helps you count workouts that make your heart beat
+                  faster — like running, biking, rowing, or rucking (walking
+                  with a heavy pack).
+                </p>
+                <p className="mt-2">
+                  <strong>Intensity Zones</strong> tell you how hard your heart
+                  is working:
+                </p>
+                <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                  <li><strong>Light</strong> — easy. You can sing.</li>
+                  <li><strong>Moderate</strong> — medium. You can talk but not sing.</li>
+                  <li><strong>Vigorous</strong> — hard. You can only say a few words.</li>
+                </ul>
+                <p className="mt-2">
+                  <strong>Heart Points</strong> count your week:
+                </p>
+                <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                  <li>1 minute Moderate = <strong>1 point</strong></li>
+                  <li>1 minute Vigorous = <strong>2 points</strong></li>
+                  <li>Goal: <strong>150 points each week</strong></li>
+                </ul>
+                <p className="mt-2">
+                  If the top safety bar shows a <strong>Red</strong> or{" "}
+                  <strong>Black</strong> flag, stay in the Light zone or go
+                  inside.
+                </p>
+              </section>
+
               <section aria-labelledby="g-copy">
                 <h3 id="g-copy" className="text-base font-bold mb-1">
                   The "Copy" button

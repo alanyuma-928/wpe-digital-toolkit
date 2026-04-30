@@ -11,6 +11,7 @@ import Engine from "./pages/Engine.tsx";
 import Fuel from "./pages/Fuel.tsx";
 import Safety from "./pages/Safety.tsx";
 import Strength from "./pages/Strength.tsx";
+import Cardio from "./pages/Cardio.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/fuel" element={<Fuel />} />
             <Route path="/safety" element={<Safety />} />
             <Route path="/strength" element={<Strength />} />
+            <Route path="/cardio" element={<Cardio />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
