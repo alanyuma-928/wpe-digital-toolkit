@@ -66,6 +66,47 @@ const RecoveryTab = () => {
     return lines.join("\n");
   };
 
+  // Streak check-in: count this as an activity day once a valid score exists.
+  useEffect(() => {
+    if (score !== null) checkIn();
+  }, [score, checkIn]);
+
+  const buildShareSummary = () => {
+    if (score === null) return "";
+    const streakLine =
+      streakCount > 0
+        ? ` Day ${streakCount} of my Mastery Streak. 🔥`
+        : "";
+    return [
+      `Daily Readiness: ${score}%.`,
+      `Sleep ${hours || "—"}h · Soreness ${soreness}/10 · Mind: ${mental}.`,
+      narrative ? narrative.text : "",
+      `Tracked with the WPE Digital Tool Kit (ACSM 12th Ed. · PAGA 2018).${streakLine}`,
+      "#WellnessByDesign #WPE #ReadinessScore",
+    ]
+      .filter(Boolean)
+      .join(" ");
+  };
+
+  const handleShare = async () => {
+    const text = buildShareSummary();
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setShared(true);
+      toast({
+        title: "Progress copied",
+        description: "Paste it into LinkedIn or your social feed.",
+      });
+      setTimeout(() => setShared(false), 2000);
+    } catch {
+      toast({
+        title: "Copy failed",
+        description: "Clipboard unavailable in this context.",
+        variant: "destructive",
+      });
+    }
+  };
   const ToneIcon =
     narrative?.tone === "low"
       ? BatteryLow
