@@ -3,6 +3,7 @@ import { useWeather, THERMAL_REDLINE_F } from "@/context/WeatherContext";
 import { Button } from "@/components/ui/button";
 import SafetyFlagBadge from "@/components/SafetyFlagBadge";
 import SimpleGuide from "@/components/SimpleGuide";
+import StreakBadge from "@/components/StreakBadge";
 
 const WeatherMonitor = () => {
   const { data, loading, error, refresh, outdoorLocked, flag } = useWeather();
@@ -21,7 +22,7 @@ const WeatherMonitor = () => {
       <div className="mx-auto w-full max-w-[375px] px-4 py-2 flex items-start gap-3">
         {elevated || outdoorLocked ? (
           <AlertTriangle
-            className="h-5 w-5 text-destructive shrink-0 mt-0.5"
+            className="h-5 w-5 text-destructive shrink-0 mt-0.5 animate-safety-pulse motion-reduce:animate-none"
             aria-hidden="true"
           />
         ) : (
@@ -95,8 +96,11 @@ const WeatherMonitor = () => {
           )}
         </div>
 
-        <div className="flex flex-col gap-1 shrink-0">
-          <SimpleGuide />
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <div className="flex items-center gap-1">
+            <StreakBadge />
+            <SimpleGuide />
+          </div>
           <Button
             type="button"
             variant="ghost"
