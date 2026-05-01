@@ -1,4 +1,4 @@
-# 🛡️ WPE Digital Tool Kit (DTK)
+# 🛡️ WPE Digital Tool Kit (DTK) v2.0
 **The Single Source of Truth for Clinical Exercise Science & Nutrition**
 
 ## 🎙️ Architect’s Overview
@@ -16,51 +16,54 @@ Every tool in this suite is engineered to follow the **Mission Loop (Pattern / R
 
 ### 📚 Single Source of Truth (SSoT)
 To ensure structural integrity, all logic within this application is hard-wired to:
-1.  **Physical Activity Guidelines for Americans (PAGA 2018, 2nd Ed.)**
-2.  **ACSM’s Guidelines for Exercise Testing and Prescription (12th Ed.)**
-3.  **U.S. Dietary Guidelines for Americans (Current Edition)**
+1. **Physical Activity Guidelines for Americans (PAGA 2018, 2nd Ed.)**
+2. **ACSM’s Guidelines for Exercise Testing and Prescription (12th Ed.)**
+3. **U.S. Dietary Guidelines for Americans (DGA 2025-2030)**
+4. **USOPC Athlete Nutrition Standards**
 
 ---
 
 ## 📱 The Tool Boxes
-The DTK is divided into four high-utility clinical modules:
-* **Biometrics Box:** BMI, WHR, and Jackson-Pollock 3-Site Skinfold auditors.
-* **The Engine Box:** Rockport 1-Mile and Cooper 1.5-Mile VO2max predictors.
-* **The Fuel Box:** Harris-Benedict RMR and DGA Macronutrient Splitter.
-* **The Safety Box:** Digital PAR-Q+ (2024), Rikli & Jones Senior Fitness Test, and **Localized Weather Auditing**.
+The DTK is divided into five high-utility clinical modules:
+* **The Safety Box:** Digital PAR-Q+ (2024) and **Environmental Intelligence** (WBGT/AQI).
+* **The Engine Box (Cardio):** VO2max predictors and **Karvonen HRR** intensity auditing with PAGA "Heart Point" tracking.
+* **The Strength Box:** Resistance training linter tracking **Relative Strength** and movement mastery (10/7/0).
+* **The Fuel Box:** Macronutrient splitting, Harris-Benedict RMR, and **Athlete Plate** selection (Rest/Practice/Game).
+* **The Recovery Box:** Biopsychosocial auditing of Sleep, Soreness, and **Mental Readiness**.
 
 ---
 
-## 🌦️ Environmental Intelligence (NWS API)
-To address the extreme climate of the Yuma and Imperial Valley regions, the DTK now includes a real-time environmental safety layer:
-* **NWS Integration:** Automatically pulls Temperature, Relative Humidity, and Wind Speed via the National Weather Service API.
-* **Heat Index Logic:** The **Safety Box** automatically audits environmental data; if the Heat Index exceeds **90°F**, the tool triggers ACSM-standard safety alerts for outdoor physical activity.
+## 🌦️ Environmental Intelligence (NWS & EPA API)
+To address the extreme climate of the Yuma region, the DTK includes a real-time environmental safety layer:
+* **NWS Integration:** Hourly updates from MCAS Yuma for Temperature, Humidity, and Wind Speed to calculate **WBGT**.
+* **EPA AirNow Integration:** Hourly **AQI** (PM-10) monitoring for desert dust mitigation.
+* **The Flag System:** Visual pulse alerts (●▲■⬢) trigger ACSM-standard safety pivots for outdoor activity.
 
 ---
 
-## 🤖 AI Integration & Edge Computing
-As of **April 2026**, the DTK utilizes local inference to ensure data sovereignty and clinical utility in low-connectivity environments.
-* **Local LLM:** Powered by **Gemma 4** via Ollama for math verification and clinical auditing.
-* **The Einstein Protocol:** AI-generated outputs require a three-sentence **Presence Defense** to maintain human-in-the-loop accountability.
+## 🤖 Vibe Coding & Agentic AI
+The DTK was developed using a **"Vibe Coding"** methodology—leveraging **Gemini 3 Flash** and **Lovable** to transform natural language clinical requirements into a hardened, responsive React application.
+* **Data Sovereignty:** Utilizes `localStorage` for edge-computing persistence.
+* **The Einstein Protocol:** AI-assisted audits require human-in-the-loop verification to maintain professional accountability.
 
 ---
 
 ## 🛡️ Structural Integrity Protocol
 ### The ### Delimiter Standard
-For all clinical case entries and AI-assisted audits, users must wrap patient/client data in **triple-hash delimiters (###)**. This ensures data is handled with the precision required for clinical auditing.
+All clinical case data and client profiles must be wrapped in **triple-hash delimiters (###)** to ensure precise data handling and AI auditing accuracy.
 
-### Accessibility & Environmental Standards
-* **Color Palette:** Navy-on-Creme (#002147 / #F5F5DC).
-* **Contrast:** Engineered for a **9:1 ratio** to ensure maximum outdoor readability in the "Zone 10" Yuma sun.
-* **Compliance:** WCAG 2.1 AA compliant semantic HTML and mobile-first navigation.
+### Accessibility Standards
+* **Palette:** Navy-on-Creme (#002147 / #F5F5DC).
+* **Readability:** Engineered for high-glare environments (Yuma "Zone 10" sun).
+* **Compliance:** WCAG 2.1 AA compliant semantic HTML (role="contentinfo", role="main").
 
 ---
 
 ## 🛠️ Faculty & Student Use
 This repository is an **Open Educational Resource (OER)**. 
 * **Students:** "Fork" this repository to your personal GitHub account to claim your professional sovereignty.
-* **Faculty:** To contribute to the logic or suggest a new "Box," please submit a Pull Request (PR) grounded in the SSoT.
+* **Mastery Streak (🔥):** Consistency is graded. Log your readiness daily to maintain your clinical streak.
 
 ---
-**Designed with agility by the WPE Department.**
-*Mastery Scale: 10 (Exemplary) | 7 (Competent) | 0 (Recalibrate)*
+**Designed with agility by the AWC WPE Department.**
+*Clinical screening tools. Interpret results per ACSM 12th Ed. & PAGA 2018 (2nd Ed.). CC BY-NC 4.0*
