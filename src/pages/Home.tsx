@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Activity, Gauge, Apple, ShieldCheck, Dumbbell, HeartPulse, type LucideIcon } from "lucide-react";
+import { Activity, Gauge, Apple, ShieldCheck, Dumbbell, HeartPulse, Moon, type LucideIcon } from "lucide-react";
 
 interface ModuleTile {
   to: string;
@@ -57,6 +57,14 @@ const modules: ModuleTile[] = [
     subtitle: "Zones · Heart Points",
     ariaLabel: "Open The Cardio Box: PAGA Heart Points and intensity zones",
     Icon: HeartPulse,
+    enabled: true,
+  },
+  {
+    to: "/recovery",
+    title: "Recovery Box",
+    subtitle: "Sleep · Soreness · Mind",
+    ariaLabel: "Open the Recovery and Readiness Box: sleep, soreness, and mental readiness",
+    Icon: Moon,
     enabled: true,
   },
 ];

@@ -232,6 +232,31 @@ const SimpleGuide = () => {
                 </p>
               </section>
 
+              <section aria-labelledby="g-recovery">
+                <h3 id="g-recovery" className="text-base font-bold mb-1">
+                  The Recovery Box (rest &amp; brain power)
+                </h3>
+                <p>
+                  Your body and your brain both need rest. <strong>Brain
+                  Power</strong> is just as important as <strong>Muscle
+                  Power</strong>. If your brain feels tired, your body will too.
+                </p>
+                <p className="mt-2">Tell the app three things:</p>
+                <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                  <li><strong>Sleep</strong> — how many hours you slept.</li>
+                  <li><strong>Soreness</strong> — how your muscles feel from 1 (fresh) to 10 (very sore).</li>
+                  <li><strong>Brain</strong> — Ready or Tired.</li>
+                </ul>
+                <p className="mt-2">
+                  The app shows a <strong>Daily Readiness Score</strong> from
+                  0% to 100%. It is like a battery for your body and brain.
+                </p>
+                <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                  <li>Below 60% = low battery. Take a recovery day.</li>
+                  <li>Above 85% = full battery. Great day for a hard workout.</li>
+                </ul>
+              </section>
+
               <section aria-labelledby="g-copy">
                 <h3 id="g-copy" className="text-base font-bold mb-1">
                   The "Copy" button
