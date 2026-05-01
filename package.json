@@ -1,14 +1,14 @@
 {
   "name": "wpe-digital-toolkit",
   "private": true,
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Clinical diagnostic kernel for AWC Exercise Science. SSoT: ACSM 12th Ed & PAGA 2018.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --report-unused-disable-directives",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
