@@ -266,6 +266,18 @@ const RecoveryTab = () => {
       </section>
 
       <CopyAuditButton getMarkdown={buildMarkdown} disabled={score === null} />
+
+      <Button
+        type="button"
+        onClick={handleShare}
+        disabled={score === null}
+        variant="outline"
+        className="mt-2 w-full h-12 text-base font-semibold border-2 border-primary"
+        aria-label="Copy a short progress summary for LinkedIn or social media"
+      >
+        {shared ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+        {shared ? "Copied for sharing" : "Share Progress"}
+      </Button>
     </section>
   );
 };
