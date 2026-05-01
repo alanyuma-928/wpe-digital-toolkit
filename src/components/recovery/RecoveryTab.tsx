@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { Battery, BatteryLow, BatteryFull } from "lucide-react";
+import { Battery, BatteryLow, BatteryFull, Share2, Check } from "lucide-react";
 import CopyAuditButton from "@/components/CopyAuditButton";
+import { useStreak } from "@/hooks/useStreak";
+import { useToast } from "@/hooks/use-toast";
 
 type Mental = "Ready" | "Tired";
 
@@ -12,6 +14,9 @@ const RecoveryTab = () => {
   const [hours, setHours] = useState("");
   const [soreness, setSoreness] = useState<number>(5);
   const [mental, setMental] = useState<Mental>("Ready");
+  const [shared, setShared] = useState(false);
+  const { checkIn, count: streakCount } = useStreak();
+  const { toast } = useToast();
 
   const score = useMemo(() => {
     const h = parseFloat(hours);
