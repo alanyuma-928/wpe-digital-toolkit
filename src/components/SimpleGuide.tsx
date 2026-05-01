@@ -268,6 +268,15 @@ const SimpleGuide = () => {
                 </p>
               </section>
 
+              <section aria-labelledby="g-streak">
+                <h3 id="g-streak" className="text-base font-bold mb-1">
+                  Your Streak 🔥
+                </h3>
+                <p>
+                  Your <strong>Streak</strong> shows how many days in a row you
+                  have checked your health. Keep it going!
+                </p>
+              </section>
               <section aria-labelledby="g-help">
                 <h3 id="g-help" className="text-base font-bold mb-1">
                   Need help?

@@ -107,7 +107,7 @@ const Home = () => {
                   <Link
                     to={to}
                     aria-label={ariaLabel}
-                    className="flex flex-col items-start justify-between min-h-[140px] w-full p-4 rounded-lg border-2 border-primary bg-card text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="flex flex-col items-start justify-between min-h-[140px] w-full p-4 rounded-lg border border-primary bg-card text-foreground shadow-md hover:shadow-lg hover:bg-secondary transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     <Icon className="h-7 w-7 text-primary" aria-hidden={true} />
                     <div className="mt-3">
@@ -123,7 +123,7 @@ const Home = () => {
                     disabled
                     aria-label={ariaLabel}
                     aria-disabled="true"
-                    className="flex flex-col items-start justify-between min-h-[140px] w-full p-4 rounded-lg border-2 border-dashed border-primary/50 bg-card/60 text-foreground/70 text-left cursor-not-allowed"
+                    className="flex flex-col items-start justify-between min-h-[140px] w-full p-4 rounded-lg border border-dashed border-primary/50 bg-card/60 text-foreground/70 text-left cursor-not-allowed shadow-sm"
                   >
                     <Icon className="h-7 w-7 text-primary/60" aria-hidden={true} />
                     <div className="mt-3">

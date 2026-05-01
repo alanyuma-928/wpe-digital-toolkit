@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { Battery, BatteryLow, BatteryFull } from "lucide-react";
+import { Battery, BatteryLow, BatteryFull, Share2, Check } from "lucide-react";
 import CopyAuditButton from "@/components/CopyAuditButton";
+import { useStreak } from "@/hooks/useStreak";
+import { useToast } from "@/hooks/use-toast";
 
 type Mental = "Ready" | "Tired";
 
@@ -12,6 +14,9 @@ const RecoveryTab = () => {
   const [hours, setHours] = useState("");
   const [soreness, setSoreness] = useState<number>(5);
   const [mental, setMental] = useState<Mental>("Ready");
+  const [shared, setShared] = useState(false);
+  const { checkIn, count: streakCount } = useStreak();
+  const { toast } = useToast();
 
   const score = useMemo(() => {
     const h = parseFloat(hours);
@@ -61,6 +66,47 @@ const RecoveryTab = () => {
     return lines.join("\n");
   };
 
+  // Streak check-in: count this as an activity day once a valid score exists.
+  useEffect(() => {
+    if (score !== null) checkIn();
+  }, [score, checkIn]);
+
+  const buildShareSummary = () => {
+    if (score === null) return "";
+    const streakLine =
+      streakCount > 0
+        ? ` Day ${streakCount} of my Mastery Streak. 🔥`
+        : "";
+    return [
+      `Daily Readiness: ${score}%.`,
+      `Sleep ${hours || "—"}h · Soreness ${soreness}/10 · Mind: ${mental}.`,
+      narrative ? narrative.text : "",
+      `Tracked with the WPE Digital Tool Kit (ACSM 12th Ed. · PAGA 2018).${streakLine}`,
+      "#WellnessByDesign #WPE #ReadinessScore",
+    ]
+      .filter(Boolean)
+      .join(" ");
+  };
+
+  const handleShare = async () => {
+    const text = buildShareSummary();
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setShared(true);
+      toast({
+        title: "Progress copied",
+        description: "Paste it into LinkedIn or your social feed.",
+      });
+      setTimeout(() => setShared(false), 2000);
+    } catch {
+      toast({
+        title: "Copy failed",
+        description: "Clipboard unavailable in this context.",
+        variant: "destructive",
+      });
+    }
+  };
   const ToneIcon =
     narrative?.tone === "low"
       ? BatteryLow
@@ -220,6 +266,18 @@ const RecoveryTab = () => {
       </section>
 
       <CopyAuditButton getMarkdown={buildMarkdown} disabled={score === null} />
+
+      <Button
+        type="button"
+        onClick={handleShare}
+        disabled={score === null}
+        variant="outline"
+        className="mt-2 w-full h-12 text-base font-semibold border-2 border-primary"
+        aria-label="Copy a short progress summary for LinkedIn or social media"
+      >
+        {shared ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+        {shared ? "Copied for sharing" : "Share Progress"}
+      </Button>
     </section>
   );
 };
