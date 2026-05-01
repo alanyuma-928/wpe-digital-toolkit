@@ -6,6 +6,15 @@ on:
     branches: [main]
   workflow_dispatch: {} # Manual trigger button
 
+  # Add this section to silence the deprecation warning
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 permissions:
   contents: read
   pages: write
