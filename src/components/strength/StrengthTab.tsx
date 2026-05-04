@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AlertTriangle, TrendingUp } from "lucide-react";
 import CopyAuditButton from "@/components/CopyAuditButton";
 import RestTimer from "@/components/strength/RestTimer";
 
@@ -32,6 +33,11 @@ const FORM_LABEL: Record<FormGrade, string> = {
   "0": "0 — Failed (technique broke down)",
 };
 
+// Epley 1-RM estimator: 1RM ≈ w × (1 + reps/30). Most accurate at reps ≤ 10.
+const epley1RM = (w: number, r: number) => w * (1 + r / 30);
+
+const VOLUME_KEY = "dtk-strength-prev-volume";
+
 const StrengthTab = () => {
   const [move, setMove] = useState<Move>("Squat");
   const [bodyWeight, setBodyWeight] = useState("");
@@ -41,6 +47,15 @@ const StrengthTab = () => {
   const [sets, setSets] = useState<LoggedSet[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [restKey, setRestKey] = useState<number | null>(null);
+  const [prevVolume, setPrevVolume] = useState<number | null>(null);
+
+  useEffect(() => {
+    const raw = window.localStorage.getItem(VOLUME_KEY);
+    if (raw) {
+      const n = parseFloat(raw);
+      if (!isNaN(n) && n > 0) setPrevVolume(n);
+    }
+  }, []);
 
   const relative = useMemo(() => {
     const w = parseFloat(weight);
@@ -48,6 +63,28 @@ const StrengthTab = () => {
     if (!w || !bw || w <= 0 || bw <= 0) return null;
     return Math.round((w / bw) * 100) / 100;
   }, [weight, bodyWeight]);
+
+  const oneRM = useMemo(() => {
+    const w = parseFloat(weight);
+    const r = parseFloat(reps);
+    if (!w || !r || w <= 0 || r <= 0) return null;
+    return Math.round(epley1RM(w, r) * 10) / 10;
+  }, [weight, reps]);
+
+  // Session volume-load = Σ (weight × reps).
+  const sessionVolume = useMemo(
+    () => sets.reduce((sum, s) => sum + s.weight * s.reps, 0),
+    [sets],
+  );
+
+  // 10% Progression Guard (ACSM): flag sessions exceeding +10% vs. prior baseline.
+  const volumeDelta = useMemo(() => {
+    if (!prevVolume || sessionVolume === 0) return null;
+    const pct = ((sessionVolume - prevVolume) / prevVolume) * 100;
+    return Math.round(pct * 10) / 10;
+  }, [prevVolume, sessionVolume]);
+
+  const overloadFlag = volumeDelta !== null && volumeDelta > 10;
 
   const logSet = () => {
     setError(null);
@@ -72,6 +109,12 @@ const StrengthTab = () => {
     setRestKey(entry.id); // triggers 90s rest timer
   };
 
+  const saveBaseline = () => {
+    if (sessionVolume <= 0) return;
+    window.localStorage.setItem(VOLUME_KEY, sessionVolume.toString());
+    setPrevVolume(sessionVolume);
+  };
+
   const clearAll = () => {
     setSets([]);
     setWeight("");
@@ -79,6 +122,7 @@ const StrengthTab = () => {
     setError(null);
     setRestKey(null);
   };
+
 
   return (
     <section aria-labelledby="strength-heading">
