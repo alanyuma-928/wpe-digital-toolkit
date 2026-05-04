@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import SafetyFlagBadge from "@/components/SafetyFlagBadge";
 import SimpleGuide from "@/components/SimpleGuide";
 import StreakBadge from "@/components/StreakBadge";
+import ObsidianToggle from "@/components/ObsidianToggle";
 
 const WeatherMonitor = () => {
   const { data, loading, error, refresh, outdoorLocked, flag } = useWeather();
@@ -99,6 +100,7 @@ const WeatherMonitor = () => {
         <div className="flex flex-col items-end gap-1 shrink-0">
           <div className="flex items-center gap-1">
             <StreakBadge />
+            <ObsidianToggle />
             <SimpleGuide />
           </div>
           <Button
