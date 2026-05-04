@@ -2,6 +2,8 @@ import BackToHome from "@/components/BackToHome";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RockportTab from "@/components/engine/RockportTab";
 import CooperTab from "@/components/engine/CooperTab";
+import METTab from "@/components/engine/METTab";
+import HRRTab from "@/components/engine/HRRTab";
 
 const Engine = () => {
   return (
@@ -26,7 +28,10 @@ const Engine = () => {
             WPE Engine Auditor
           </h2>
           <p className="text-xs text-muted-foreground mt-2">
-            SSOT: ACSM 12th Ed. · Kline (1987) · Cooper (1968)
+            SSOT: ACSM 12th Ed. · Kline (1987) · Cooper (1968) · PAGA 2018 (2nd Ed.)
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-1 italic">
+            Mission Loop · Pattern → Rule → Solve
           </p>
         </header>
 
@@ -34,20 +39,32 @@ const Engine = () => {
           <div className="bg-card border-2 border-primary rounded-lg p-4">
             <Tabs defaultValue="rockport" className="w-full">
               <TabsList
-                className="grid w-full grid-cols-2 h-12 bg-secondary border-2 border-primary/40 p-1"
+                className="grid w-full grid-cols-4 h-12 bg-secondary border-2 border-primary/40 p-1"
                 aria-label="Cardiorespiratory auditors"
               >
                 <TabsTrigger
                   value="rockport"
-                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="h-full text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   Rockport
                 </TabsTrigger>
                 <TabsTrigger
                   value="cooper"
-                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="h-full text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   Cooper
+                </TabsTrigger>
+                <TabsTrigger
+                  value="met"
+                  className="h-full text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  MET
+                </TabsTrigger>
+                <TabsTrigger
+                  value="hrr"
+                  className="h-full text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  HRR
                 </TabsTrigger>
               </TabsList>
 
@@ -56,6 +73,12 @@ const Engine = () => {
               </TabsContent>
               <TabsContent value="cooper" className="mt-5">
                 <CooperTab />
+              </TabsContent>
+              <TabsContent value="met" className="mt-5">
+                <METTab />
+              </TabsContent>
+              <TabsContent value="hrr" className="mt-5">
+                <HRRTab />
               </TabsContent>
             </Tabs>
           </div>
@@ -72,3 +95,4 @@ const Engine = () => {
 };
 
 export default Engine;
+

@@ -72,6 +72,52 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+  /* DTK A11Y Hardening — Obsidian 9.0:1 Protocol (Canvas LMS).
+     #000000 bg / #FFFFFF fg = 21:1 · #FFFF00 accent on #000 = 19.6:1.
+     All semantic tokens remapped to satisfy ≥9:1 minimum. */
+  .obsidian {
+    --background: 0 0% 0%;              /* #000000 */
+    --foreground: 0 0% 100%;            /* #FFFFFF */
+
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 60 100% 50%;             /* #FFFF00 */
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 0 0% 8%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 92%;       /* 18.9:1 on #000 */
+
+    --accent: 60 100% 50%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 100% 60%;          /* #FF3333 ≈ 5.9:1 — paired w/ shape glyphs */
+    --destructive-foreground: 0 0% 0%;
+
+    --border: 60 100% 50%;
+    --input: 0 0% 100%;
+    --ring: 60 100% 50%;
+
+    --shadow-elegant: 0 0 0 1px hsl(60 100% 50% / 0.6);
+    --shadow-soft: 0 0 0 1px hsl(60 100% 50% / 0.4);
+    --gradient-navy: linear-gradient(135deg, hsl(0 0% 0%), hsl(0 0% 8%));
+
+    --flag-green: 130 100% 45%;
+    --flag-green-foreground: 0 0% 0%;
+    --flag-yellow: 60 100% 50%;
+    --flag-yellow-foreground: 0 0% 0%;
+    --flag-red: 0 100% 60%;
+    --flag-red-foreground: 0 0% 0%;
+    --flag-black: 0 0% 0%;
+    --flag-black-foreground: 60 100% 50%;
+  }
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;

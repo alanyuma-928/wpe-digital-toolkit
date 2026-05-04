@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AlertTriangle, TrendingUp } from "lucide-react";
 import CopyAuditButton from "@/components/CopyAuditButton";
 import RestTimer from "@/components/strength/RestTimer";
 
@@ -32,6 +33,11 @@ const FORM_LABEL: Record<FormGrade, string> = {
   "0": "0 — Failed (technique broke down)",
 };
 
+// Epley 1-RM estimator: 1RM ≈ w × (1 + reps/30). Most accurate at reps ≤ 10.
+const epley1RM = (w: number, r: number) => w * (1 + r / 30);
+
+const VOLUME_KEY = "dtk-strength-prev-volume";
+
 const StrengthTab = () => {
   const [move, setMove] = useState<Move>("Squat");
   const [bodyWeight, setBodyWeight] = useState("");
@@ -41,6 +47,15 @@ const StrengthTab = () => {
   const [sets, setSets] = useState<LoggedSet[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [restKey, setRestKey] = useState<number | null>(null);
+  const [prevVolume, setPrevVolume] = useState<number | null>(null);
+
+  useEffect(() => {
+    const raw = window.localStorage.getItem(VOLUME_KEY);
+    if (raw) {
+      const n = parseFloat(raw);
+      if (!isNaN(n) && n > 0) setPrevVolume(n);
+    }
+  }, []);
 
   const relative = useMemo(() => {
     const w = parseFloat(weight);
@@ -48,6 +63,28 @@ const StrengthTab = () => {
     if (!w || !bw || w <= 0 || bw <= 0) return null;
     return Math.round((w / bw) * 100) / 100;
   }, [weight, bodyWeight]);
+
+  const oneRM = useMemo(() => {
+    const w = parseFloat(weight);
+    const r = parseFloat(reps);
+    if (!w || !r || w <= 0 || r <= 0) return null;
+    return Math.round(epley1RM(w, r) * 10) / 10;
+  }, [weight, reps]);
+
+  // Session volume-load = Σ (weight × reps).
+  const sessionVolume = useMemo(
+    () => sets.reduce((sum, s) => sum + s.weight * s.reps, 0),
+    [sets],
+  );
+
+  // 10% Progression Guard (ACSM): flag sessions exceeding +10% vs. prior baseline.
+  const volumeDelta = useMemo(() => {
+    if (!prevVolume || sessionVolume === 0) return null;
+    const pct = ((sessionVolume - prevVolume) / prevVolume) * 100;
+    return Math.round(pct * 10) / 10;
+  }, [prevVolume, sessionVolume]);
+
+  const overloadFlag = volumeDelta !== null && volumeDelta > 10;
 
   const logSet = () => {
     setError(null);
@@ -72,6 +109,12 @@ const StrengthTab = () => {
     setRestKey(entry.id); // triggers 90s rest timer
   };
 
+  const saveBaseline = () => {
+    if (sessionVolume <= 0) return;
+    window.localStorage.setItem(VOLUME_KEY, sessionVolume.toString());
+    setPrevVolume(sessionVolume);
+  };
+
   const clearAll = () => {
     setSets([]);
     setWeight("");
@@ -79,6 +122,7 @@ const StrengthTab = () => {
     setError(null);
     setRestKey(null);
   };
+
 
   return (
     <section aria-labelledby="strength-heading">
@@ -188,23 +232,38 @@ const StrengthTab = () => {
           </Select>
         </div>
 
-        {relative !== null && (
+        {(relative !== null || oneRM !== null) && (
           <div
             role="status"
             aria-live="polite"
-            className="border-2 border-primary rounded-lg p-3 bg-secondary"
+            className="border-2 border-primary rounded-lg p-3 bg-secondary grid grid-cols-2 gap-3"
           >
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
-              Relative Strength
-            </p>
-            <p className="text-3xl font-extrabold text-foreground tabular-nums">
-              {relative.toFixed(2)}×
-            </p>
-            <p className="text-[11px] text-muted-foreground mt-1">
-              Weight ÷ Current Body Weight
-            </p>
+            {relative !== null && (
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Relative Strength
+                </p>
+                <p className="text-2xl font-extrabold text-foreground tabular-nums">
+                  {relative.toFixed(2)}×
+                </p>
+                <p className="text-[10px] text-muted-foreground">Weight ÷ BW</p>
+              </div>
+            )}
+            {oneRM !== null && (
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Est. 1-RM (Epley)
+                </p>
+                <p className="text-2xl font-extrabold text-foreground tabular-nums">
+                  {oneRM}
+                  <span className="text-xs font-semibold ml-1">lb</span>
+                </p>
+                <p className="text-[10px] text-muted-foreground">w·(1+r/30)</p>
+              </div>
+            )}
           </div>
         )}
+
 
         <div className="flex gap-3 pt-1">
           <Button type="submit" className="flex-1 h-12 text-base font-semibold">
@@ -231,8 +290,61 @@ const StrengthTab = () => {
       <RestTimer triggerKey={restKey} />
 
       {sets.length > 0 && (
-        <div className="mt-5">
-          <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
+        <div className="mt-5 space-y-3">
+          <div className="border-2 border-primary rounded-lg p-3 bg-secondary flex items-start gap-2">
+            <TrendingUp className="h-5 w-5 text-foreground shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="flex-1">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Session Volume-Load
+              </p>
+              <p className="text-2xl font-extrabold text-foreground tabular-nums">
+                {sessionVolume.toLocaleString()}
+                <span className="text-xs font-semibold ml-1">lb·reps</span>
+              </p>
+              {prevVolume !== null ? (
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Prior baseline {prevVolume.toLocaleString()} ·{" "}
+                  <span
+                    className={
+                      overloadFlag ? "font-bold text-destructive" : "font-semibold"
+                    }
+                  >
+                    {volumeDelta && volumeDelta > 0 ? "+" : ""}
+                    {volumeDelta}%
+                  </span>
+                </p>
+              ) : (
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  No baseline saved yet.
+                </p>
+              )}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={saveBaseline}
+              className="h-8 px-2 text-[11px] border-2 border-primary text-foreground"
+            >
+              Set Baseline
+            </Button>
+          </div>
+
+          {overloadFlag && (
+            <div
+              role="alert"
+              className="border-2 border-destructive rounded-lg p-3 bg-destructive/10 flex items-start gap-2"
+            >
+              <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" aria-hidden="true" />
+              <p className="text-[12px] font-semibold text-destructive">
+                10% Volume-Load Rule exceeded ({volumeDelta}%). ACSM 12th Ed.
+                cautions against &gt;10% week-over-week progression to limit
+                overuse risk.
+              </p>
+            </div>
+          )}
+
+          <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
             Session Log ({sets.length})
           </h4>
           <ul className="space-y-2">
@@ -266,13 +378,18 @@ const StrengthTab = () => {
                 "",
                 `- **Body Weight**: ${sets[0].bodyWeight} lb`,
                 `- **Sets Logged**: ${sets.length}`,
+                `- **Session Volume-Load**: ${sessionVolume.toLocaleString()} lb·reps`,
+                prevVolume !== null
+                  ? `- **Δ vs. Baseline**: ${volumeDelta}% (10% Rule ${overloadFlag ? "EXCEEDED" : "OK"})`
+                  : "- **Baseline**: not set",
                 "",
-                "| Move | Weight (lb) | Reps | Relative | Form |",
-                "| --- | --- | --- | --- | --- |",
+                "| Move | Weight (lb) | Reps | Relative | Est. 1-RM | Form |",
+                "| --- | --- | --- | --- | --- | --- |",
                 ...sets.map(
                   (s) =>
-                    `| ${s.move} | ${s.weight} | ${s.reps} | ${s.relative.toFixed(2)}× | ${s.formGrade} |`,
+                    `| ${s.move} | ${s.weight} | ${s.reps} | ${s.relative.toFixed(2)}× | ${epley1RM(s.weight, s.reps).toFixed(1)} | ${s.formGrade} |`,
                 ),
+
                 "",
                 "_Form Grade: 10 = Clean · 7 = Acceptable · 0 = Failed_",
                 "_Relative Strength = Weight ÷ Current Body Weight_",
