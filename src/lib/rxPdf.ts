@@ -107,8 +107,8 @@ export const generateRxPdf = ({ client, fittvp, weather, flag, units }: RxPayloa
   const audit = [
     `Timestamp: ${ts()}`,
     `Station: KNYL · Yuma MCAS`,
-    `Temp: ${weather?.tempF ?? "n/a"}°F  |  Humidity: ${weather?.humidity ?? "n/a"}%`,
-    `WBGT (est.): ${weather?.wbgtF ?? "n/a"}°F  |  UV: ${weather?.uvIndex ?? "n/a"}`,
+    `Temp: ${tempVal(weather?.tempF)}${tempLabel}  |  Humidity: ${weather?.humidity ?? "n/a"}%`,
+    `WBGT (est.): ${tempVal(weather?.wbgtF)}${tempLabel}  |  UV: ${weather?.uvIndex ?? "n/a"}`,
     `AQI: ${weather?.aqi ? `${weather.aqi.value} ${weather.aqi.category} (${weather.aqi.parameter})` : "n/a"}`,
     `Flag: ${flag ? `${flag.shape} ${flag.color} — ${flag.label}` : "n/a"}`,
     flag ? `Guidance: ${flag.guidance}` : "",

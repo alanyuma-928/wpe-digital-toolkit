@@ -14,9 +14,16 @@ import { generateRxPdf, type FITTVP, type ClientProfile } from "@/lib/rxPdf";
  */
 const HEAT_INDEX_WARN_F = 90;
 
+type Units = "imperial" | "metric";
+
 const SolveBox = () => {
   const { data, flag } = useWeather();
-
+  const [units, setUnits] = useState<Units>("imperial");
+  const isMetric = units === "metric";
+  const fToC = (f: number) => Math.round(((f - 32) * 5) / 9 * 10) / 10;
+  const t = (f: number | null | undefined) =>
+    f === null || f === undefined ? "n/a" : isMetric ? fToC(f) : f;
+  const tLabel = isMetric ? "°C" : "°F";
   const [client, setClient] = useState<ClientProfile>({
     name: "",
     age: "",
@@ -51,6 +58,7 @@ const SolveBox = () => {
       fittvp: { ...fittvp, intensity: intensityDisplay },
       weather: data,
       flag,
+      units,
     });
   };
 
