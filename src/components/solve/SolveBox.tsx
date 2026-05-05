@@ -168,6 +168,73 @@ const SolveBox = () => {
             </p>
           )}
         </footer>
+
+        {/* On-Screen Rx Preview (mirrors PDF layout) */}
+        <section aria-labelledby="rx-preview-heading" className="mt-2">
+          <h3 id="rx-preview-heading" className="text-sm font-bold uppercase tracking-widest mb-2">
+            Rx Preview
+          </h3>
+          <div className="rounded-md border-2 border-primary bg-card p-4 text-foreground">
+            <h2 className="text-lg font-bold" style={{ color: "#003366" }}>
+              Clinical Exercise Prescription
+            </h2>
+            <p className="text-[10px] text-muted-foreground mb-3">
+              Generated: {new Date().toLocaleString()}
+            </p>
+
+            <pre className="font-mono text-xs whitespace-pre-wrap leading-relaxed mb-3">
+{`### CLIENT PROFILE ###
+Name:         ${client.name || "—"}
+Age:          ${client.age || "—"}
+Resting HR:   ${client.restingHR || "—"} bpm
+Beta-Blocker: ${client.betaBlocker ? "YES (HR zones invalidated)" : "No"}
+Notes:        ${client.notes || "—"}
+### END CLIENT PROFILE ###`}
+            </pre>
+
+            <table className="w-full text-xs border-collapse mb-3">
+              <thead>
+                <tr style={{ backgroundColor: "#003366", color: "#FFFFFF" }}>
+                  <th className="text-left p-2 border border-primary">Component</th>
+                  <th className="text-left p-2 border border-primary">Prescription</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["Frequency", fittvp.frequency],
+                  ["Intensity", intensityDisplay],
+                  ["Time", fittvp.time],
+                  ["Type", fittvp.type],
+                  ["Volume", fittvp.volume],
+                  ["Progression", fittvp.progression],
+                ].map(([k, v]) => (
+                  <tr key={k}>
+                    <td className="p-2 border border-primary/40 font-semibold">{k}</td>
+                    <td className="p-2 border border-primary/40">{v}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <h4 className="text-sm font-bold" style={{ color: "#003366" }}>
+              Thermal Safety Audit (KNYL)
+            </h4>
+            <ul className="text-xs mt-1 space-y-0.5">
+              <li>Timestamp: {new Date().toISOString()}</li>
+              <li>Station: KNYL · Yuma MCAS</li>
+              <li>Temp: {data?.tempF ?? "n/a"}°F · Humidity: {data?.humidity ?? "n/a"}%</li>
+              <li>WBGT (est.): {data?.wbgtF ?? "n/a"}°F · UV: {data?.uvIndex ?? "n/a"}</li>
+              <li>
+                AQI:{" "}
+                {data?.aqi
+                  ? `${data.aqi.value} ${data.aqi.category} (${data.aqi.parameter})`
+                  : "n/a"}
+              </li>
+              <li>Flag: {flag ? `${flag.shape} ${flag.color} — ${flag.label}` : "n/a"}</li>
+              {flag && <li>Guidance: {flag.guidance}</li>}
+            </ul>
+          </div>
+        </section>
       </CardContent>
     </Card>
   );
