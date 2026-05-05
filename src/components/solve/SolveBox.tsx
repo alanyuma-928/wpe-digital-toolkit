@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { AlertTriangle, FileDown } from "lucide-react";
+import { AlertTriangle, ClipboardCopy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useWeather } from "@/context/WeatherContext";
-import { generateRxPdf, type FITTVP, type ClientProfile } from "@/lib/rxPdf";
+import { toast } from "sonner";
+import { buildRxMarkdown, type FITTVP, type ClientProfile } from "@/lib/rxMarkdown";
 
 /**
  * Solve Box — final Exercise Prescription container.
@@ -52,14 +53,28 @@ const SolveBox = () => {
     flag?.color === "Red" ||
     flag?.color === "Black";
 
-  const handleExport = () => {
-    generateRxPdf({
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyMarkdown = async () => {
+    const md = buildRxMarkdown({
       client,
       fittvp: { ...fittvp, intensity: intensityDisplay },
       weather: data,
       flag,
       units,
     });
+    try {
+      await navigator.clipboard.writeText(md);
+      setCopied(true);
+      toast.success("Markdown Copied!", {
+        description: "Paste into the Canvas RCE (Text Entry).",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Copy failed", {
+        description: "Clipboard unavailable in this context.",
+      });
+    }
   };
 
   return (
@@ -176,9 +191,9 @@ const SolveBox = () => {
           </div>
         </section>
 
-        <Button onClick={handleExport} className="w-full" size="lg">
-          <FileDown className="h-4 w-4" />
-          Generate Professional Rx PDF
+        <Button onClick={handleCopyMarkdown} className="w-full" size="lg">
+          {copied ? <Check className="h-4 w-4" /> : <ClipboardCopy className="h-4 w-4" />}
+          {copied ? "Markdown Copied!" : "Copy Clinical Rx (Markdown)"}
         </Button>
 
         {/* Thermal Safety Footer */}
