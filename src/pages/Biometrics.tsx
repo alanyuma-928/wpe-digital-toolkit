@@ -30,41 +30,7 @@ const Biometrics = () => {
 
         <div id="main-content">
           <div className="bg-card border-2 border-primary rounded-lg p-4">
-            <Tabs defaultValue="bmi" className="w-full">
-              <TabsList
-                className="grid w-full grid-cols-3 h-12 bg-secondary border-2 border-primary/40 p-1"
-                aria-label="Biometric auditors"
-              >
-                <TabsTrigger
-                  value="bmi"
-                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                >
-                  BMI
-                </TabsTrigger>
-                <TabsTrigger
-                  value="whr"
-                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                >
-                  WHR
-                </TabsTrigger>
-                <TabsTrigger
-                  value="skinfold"
-                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                >
-                  Skinfold
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="bmi" className="mt-5">
-                <BMITab />
-              </TabsContent>
-              <TabsContent value="whr" className="mt-5">
-                <WHRTab />
-              </TabsContent>
-              <TabsContent value="skinfold" className="mt-5">
-                <SkinfoldTab />
-              </TabsContent>
-            </Tabs>
+            <BiometricAudit />
           </div>
         </div>
 
