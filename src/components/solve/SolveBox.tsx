@@ -14,9 +14,16 @@ import { generateRxPdf, type FITTVP, type ClientProfile } from "@/lib/rxPdf";
  */
 const HEAT_INDEX_WARN_F = 90;
 
+type Units = "imperial" | "metric";
+
 const SolveBox = () => {
   const { data, flag } = useWeather();
-
+  const [units, setUnits] = useState<Units>("imperial");
+  const isMetric = units === "metric";
+  const fToC = (f: number) => Math.round(((f - 32) * 5) / 9 * 10) / 10;
+  const t = (f: number | null | undefined) =>
+    f === null || f === undefined ? "n/a" : isMetric ? fToC(f) : f;
+  const tLabel = isMetric ? "°C" : "°F";
   const [client, setClient] = useState<ClientProfile>({
     name: "",
     age: "",
@@ -51,6 +58,7 @@ const SolveBox = () => {
       fittvp: { ...fittvp, intensity: intensityDisplay },
       weather: data,
       flag,
+      units,
     });
   };
 
@@ -69,6 +77,32 @@ const SolveBox = () => {
       </CardHeader>
 
       <CardContent className="space-y-6 pt-6">
+        {/* Units Toggle */}
+        <div
+          role="group"
+          aria-label="Units toggle"
+          className="flex items-center justify-end gap-2 text-xs"
+        >
+          <span className="font-semibold uppercase tracking-widest">Units:</span>
+          <div className="inline-flex rounded-md border-2 border-primary overflow-hidden">
+            {(["imperial", "metric"] as const).map((u) => (
+              <button
+                key={u}
+                type="button"
+                onClick={() => setUnits(u)}
+                aria-pressed={units === u}
+                className={`px-3 py-1 font-semibold uppercase ${
+                  units === u
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card text-foreground hover:bg-secondary"
+                }`}
+              >
+                {u === "imperial" ? "°F" : "°C"}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Client Profile */}
         <section aria-labelledby="profile-heading">
           <h3 id="profile-heading" className="text-sm font-bold uppercase tracking-widest mb-3">
@@ -158,13 +192,13 @@ const SolveBox = () => {
             <p className="flex items-start gap-2 font-semibold">
               <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
               <span>
-                Thermal Safety Warning: KNYL {data?.tempF ?? "—"}°F · WBGT {data?.wbgtF ?? "—"}°F ·{" "}
+                Thermal Safety Warning: KNYL {t(data?.tempF)}{tLabel} · WBGT {t(data?.wbgtF)}{tLabel} ·{" "}
                 {flag?.label ?? "Heat risk elevated"}. Move indoors or restrict intensity.
               </span>
             </p>
           ) : (
             <p>
-              KNYL {data?.tempF ?? "—"}°F · WBGT {data?.wbgtF ?? "—"}°F · {flag?.label ?? "Conditions nominal"}.
+              KNYL {t(data?.tempF)}{tLabel} · WBGT {t(data?.wbgtF)}{tLabel} · {flag?.label ?? "Conditions nominal"}.
             </p>
           )}
         </footer>
@@ -222,8 +256,8 @@ Notes:        ${client.notes || "—"}
             <ul className="text-xs mt-1 space-y-0.5">
               <li>Timestamp: {new Date().toISOString()}</li>
               <li>Station: KNYL · Yuma MCAS</li>
-              <li>Temp: {data?.tempF ?? "n/a"}°F · Humidity: {data?.humidity ?? "n/a"}%</li>
-              <li>WBGT (est.): {data?.wbgtF ?? "n/a"}°F · UV: {data?.uvIndex ?? "n/a"}</li>
+              <li>Temp: {t(data?.tempF)}{tLabel} · Humidity: {data?.humidity ?? "n/a"}%</li>
+              <li>WBGT (est.): {t(data?.wbgtF)}{tLabel} · UV: {data?.uvIndex ?? "n/a"}</li>
               <li>
                 AQI:{" "}
                 {data?.aqi
