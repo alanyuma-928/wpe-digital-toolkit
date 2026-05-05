@@ -53,14 +53,28 @@ const SolveBox = () => {
     flag?.color === "Red" ||
     flag?.color === "Black";
 
-  const handleExport = () => {
-    generateRxPdf({
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyMarkdown = async () => {
+    const md = buildRxMarkdown({
       client,
       fittvp: { ...fittvp, intensity: intensityDisplay },
       weather: data,
       flag,
       units,
     });
+    try {
+      await navigator.clipboard.writeText(md);
+      setCopied(true);
+      toast.success("Markdown Copied!", {
+        description: "Paste into the Canvas RCE (Text Entry).",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Copy failed", {
+        description: "Clipboard unavailable in this context.",
+      });
+    }
   };
 
   return (
