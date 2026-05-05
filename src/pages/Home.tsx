@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Activity, Gauge, Apple, ShieldCheck, Dumbbell, HeartPulse, Moon, type LucideIcon } from "lucide-react";
+import { Activity, Gauge, Apple, ShieldCheck, Dumbbell, HeartPulse, Moon, ClipboardCheck, type LucideIcon } from "lucide-react";
 
 interface ModuleTile {
   to: string;
@@ -65,6 +65,14 @@ const modules: ModuleTile[] = [
     subtitle: "Sleep · Soreness · Mind",
     ariaLabel: "Open the Recovery and Readiness Box: sleep, soreness, and mental readiness",
     Icon: Moon,
+    enabled: true,
+  },
+  {
+    to: "/solve",
+    title: "Solve Box",
+    subtitle: "FITT-VP · Rx PDF",
+    ariaLabel: "Open the Solve Box: final exercise prescription and PDF export",
+    Icon: ClipboardCheck,
     enabled: true,
   },
 ];
