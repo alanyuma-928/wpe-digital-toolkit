@@ -77,6 +77,32 @@ const SolveBox = () => {
       </CardHeader>
 
       <CardContent className="space-y-6 pt-6">
+        {/* Units Toggle */}
+        <div
+          role="group"
+          aria-label="Units toggle"
+          className="flex items-center justify-end gap-2 text-xs"
+        >
+          <span className="font-semibold uppercase tracking-widest">Units:</span>
+          <div className="inline-flex rounded-md border-2 border-primary overflow-hidden">
+            {(["imperial", "metric"] as const).map((u) => (
+              <button
+                key={u}
+                type="button"
+                onClick={() => setUnits(u)}
+                aria-pressed={units === u}
+                className={`px-3 py-1 font-semibold uppercase ${
+                  units === u
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card text-foreground hover:bg-secondary"
+                }`}
+              >
+                {u === "imperial" ? "°F" : "°C"}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Client Profile */}
         <section aria-labelledby="profile-heading">
           <h3 id="profile-heading" className="text-sm font-bold uppercase tracking-widest mb-3">
