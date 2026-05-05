@@ -191,9 +191,9 @@ const SolveBox = () => {
           </div>
         </section>
 
-        <Button onClick={handleExport} className="w-full" size="lg">
-          <FileDown className="h-4 w-4" />
-          Generate Professional Rx PDF
+        <Button onClick={handleCopyMarkdown} className="w-full" size="lg">
+          {copied ? <Check className="h-4 w-4" /> : <ClipboardCopy className="h-4 w-4" />}
+          {copied ? "Markdown Copied!" : "Copy Clinical Rx (Markdown)"}
         </Button>
 
         {/* Thermal Safety Footer */}
