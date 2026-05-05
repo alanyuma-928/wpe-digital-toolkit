@@ -19,16 +19,24 @@ export interface ClientProfile {
   notes: string;
 }
 
+export type Units = "imperial" | "metric";
+
 export interface RxPayload {
   client: ClientProfile;
   fittvp: FITTVP;
   weather: WeatherSnapshot | null;
   flag: SafetyFlag | null;
+  units: Units;
 }
 
 const ts = () => new Date().toISOString();
+const fToC = (f: number) => Math.round(((f - 32) * 5) / 9 * 10) / 10;
 
-export const generateRxPdf = ({ client, fittvp, weather, flag }: RxPayload) => {
+export const generateRxPdf = ({ client, fittvp, weather, flag, units }: RxPayload) => {
+  const isMetric = units === "metric";
+  const tempLabel = isMetric ? "°C" : "°F";
+  const tempVal = (f: number | null | undefined) =>
+    f === null || f === undefined ? "n/a" : isMetric ? fToC(f) : f;
   const doc = new jsPDF({ unit: "pt", format: "letter" });
   const margin = 48;
   let y = margin;
