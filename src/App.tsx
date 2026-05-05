@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { WeatherProvider } from "@/context/WeatherContext";
+import { UnitsProvider } from "@/context/UnitsContext";
 import WeatherMonitor from "@/components/WeatherMonitor";
 import Home from "./pages/Home.tsx";
 import Biometrics from "./pages/Biometrics.tsx";
