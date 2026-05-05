@@ -192,13 +192,13 @@ const SolveBox = () => {
             <p className="flex items-start gap-2 font-semibold">
               <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
               <span>
-                Thermal Safety Warning: KNYL {data?.tempF ?? "—"}°F · WBGT {data?.wbgtF ?? "—"}°F ·{" "}
+                Thermal Safety Warning: KNYL {t(data?.tempF)}{tLabel} · WBGT {t(data?.wbgtF)}{tLabel} ·{" "}
                 {flag?.label ?? "Heat risk elevated"}. Move indoors or restrict intensity.
               </span>
             </p>
           ) : (
             <p>
-              KNYL {data?.tempF ?? "—"}°F · WBGT {data?.wbgtF ?? "—"}°F · {flag?.label ?? "Conditions nominal"}.
+              KNYL {t(data?.tempF)}{tLabel} · WBGT {t(data?.wbgtF)}{tLabel} · {flag?.label ?? "Conditions nominal"}.
             </p>
           )}
         </footer>
@@ -256,8 +256,8 @@ Notes:        ${client.notes || "—"}
             <ul className="text-xs mt-1 space-y-0.5">
               <li>Timestamp: {new Date().toISOString()}</li>
               <li>Station: KNYL · Yuma MCAS</li>
-              <li>Temp: {data?.tempF ?? "n/a"}°F · Humidity: {data?.humidity ?? "n/a"}%</li>
-              <li>WBGT (est.): {data?.wbgtF ?? "n/a"}°F · UV: {data?.uvIndex ?? "n/a"}</li>
+              <li>Temp: {t(data?.tempF)}{tLabel} · Humidity: {data?.humidity ?? "n/a"}%</li>
+              <li>WBGT (est.): {t(data?.wbgtF)}{tLabel} · UV: {data?.uvIndex ?? "n/a"}</li>
               <li>
                 AQI:{" "}
                 {data?.aqi
