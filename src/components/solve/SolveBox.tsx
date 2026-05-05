@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useWeather } from "@/context/WeatherContext";
+import { useUnits } from "@/context/UnitsContext";
 import { toast } from "sonner";
 import { buildRxMarkdown, type FITTVP, type ClientProfile } from "@/lib/rxMarkdown";
 
@@ -12,14 +13,13 @@ import { buildRxMarkdown, type FITTVP, type ClientProfile } from "@/lib/rxMarkdo
  * Solve Box — final Exercise Prescription container.
  * Mission Loop: Pattern → Rule → Solve.
  * WCAG 2.1 AA header: bg #003366 / text #FFFFFF (~12.6:1).
+ * Units are inherited globally from UnitsContext (set in BiometricAudit).
  */
 const HEAT_INDEX_WARN_F = 90;
 
-type Units = "imperial" | "metric";
-
 const SolveBox = () => {
   const { data, flag } = useWeather();
-  const [units, setUnits] = useState<Units>("imperial");
+  const { units } = useUnits();
   const isMetric = units === "metric";
   const fToC = (f: number) => Math.round(((f - 32) * 5) / 9 * 10) / 10;
   const t = (f: number | null | undefined) =>
