@@ -1,8 +1,5 @@
 import BackToHome from "@/components/BackToHome";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import BMITab from "@/components/biometrics/BMITab";
-import WHRTab from "@/components/biometrics/WHRTab";
-import SkinfoldTab from "@/components/biometrics/SkinfoldTab";
+import BiometricAudit from "@/components/biometrics/BiometricAudit";
 
 const Biometrics = () => {
   return (
