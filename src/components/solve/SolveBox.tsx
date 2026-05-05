@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useWeather } from "@/context/WeatherContext";
+import { useUnits } from "@/context/UnitsContext";
 import { toast } from "sonner";
 import { buildRxMarkdown, type FITTVP, type ClientProfile } from "@/lib/rxMarkdown";
 
@@ -12,14 +13,13 @@ import { buildRxMarkdown, type FITTVP, type ClientProfile } from "@/lib/rxMarkdo
  * Solve Box — final Exercise Prescription container.
  * Mission Loop: Pattern → Rule → Solve.
  * WCAG 2.1 AA header: bg #003366 / text #FFFFFF (~12.6:1).
+ * Units are inherited globally from UnitsContext (set in BiometricAudit).
  */
 const HEAT_INDEX_WARN_F = 90;
 
-type Units = "imperial" | "metric";
-
 const SolveBox = () => {
   const { data, flag } = useWeather();
-  const [units, setUnits] = useState<Units>("imperial");
+  const { units } = useUnits();
   const isMetric = units === "metric";
   const fToC = (f: number) => Math.round(((f - 32) * 5) / 9 * 10) / 10;
   const t = (f: number | null | undefined) =>
@@ -92,31 +92,10 @@ const SolveBox = () => {
       </CardHeader>
 
       <CardContent className="space-y-6 pt-6">
-        {/* Units Toggle */}
-        <div
-          role="group"
-          aria-label="Units toggle"
-          className="flex items-center justify-end gap-2 text-xs"
-        >
-          <span className="font-semibold uppercase tracking-widest">Units:</span>
-          <div className="inline-flex rounded-md border-2 border-primary overflow-hidden">
-            {(["imperial", "metric"] as const).map((u) => (
-              <button
-                key={u}
-                type="button"
-                onClick={() => setUnits(u)}
-                aria-pressed={units === u}
-                className={`px-3 py-1 font-semibold uppercase ${
-                  units === u
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card text-foreground hover:bg-secondary"
-                }`}
-              >
-                {u === "imperial" ? "°F" : "°C"}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Units (read-only — inherited from BiometricAudit) */}
+        <p className="text-[11px] text-muted-foreground text-right uppercase tracking-widest">
+          Units inherited: <span className="font-bold text-foreground">{units}</span> ({tLabel})
+        </p>
 
         {/* Client Profile */}
         <section aria-labelledby="profile-heading">
