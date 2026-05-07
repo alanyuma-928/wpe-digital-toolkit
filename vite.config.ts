@@ -5,8 +5,8 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  // CORRECTED: GitHub Pages sub-folder path
-  base: "/wpe-digital-toolkit/",
+  // RELATIVE PATH FIX: This forces the app to load assets relative to index.html
+  base: "./", 
   server: {
     host: "::",
     port: 8080,
@@ -21,4 +21,8 @@ export default defineConfig(({ mode }) => ({
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],
   },
+  build: {
+    // Ensures the build process cleans old files that might cause white screens
+    emptyOutDir: true,
+  }
 }));
