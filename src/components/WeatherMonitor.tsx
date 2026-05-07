@@ -20,7 +20,7 @@ const WeatherMonitor = () => {
           : "border-primary bg-card"
       }`}
     >
-      <div className="mx-auto w-full max-w-[375px] px-4 py-2 flex items-start gap-3">
+      <div className="mx-auto w-full max-w-[260px] px-4 py-2 flex items-start gap-3">
         {elevated || outdoorLocked ? (
           <AlertTriangle
             className="h-5 w-5 text-destructive shrink-0 mt-0.5 animate-safety-pulse motion-reduce:animate-none"
