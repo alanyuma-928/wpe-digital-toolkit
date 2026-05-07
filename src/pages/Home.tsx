@@ -108,19 +108,19 @@ const Home = () => {
             Command Center
           </h3>
 
-          <ul className="grid grid-cols-2 gap-3" role="list">
+          <ul className="flex flex-col gap-2" role="list">
             {modules.map(({ to, title, subtitle, ariaLabel, Icon, enabled }) => (
               <li key={title}>
                 {enabled ? (
                   <Link
                     to={to}
                     aria-label={ariaLabel}
-                    className="flex flex-col items-start justify-between min-h-[140px] w-full p-4 rounded-lg border border-primary bg-card text-foreground shadow-md hover:shadow-lg hover:bg-secondary transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="flex items-center gap-3 min-h-[44px] w-full p-2.5 rounded-md border border-primary bg-card text-foreground shadow-sm hover:shadow-md hover:bg-secondary transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
-                    <Icon className="h-7 w-7 text-primary" aria-hidden={true} />
-                    <div className="mt-3">
-                      <p className="text-base font-bold leading-tight">{title}</p>
-                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground mt-1">
+                    <Icon className="h-5 w-5 text-primary shrink-0" aria-hidden={true} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-bold leading-tight truncate">{title}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5 truncate">
                         {subtitle}
                       </p>
                     </div>
@@ -131,16 +131,13 @@ const Home = () => {
                     disabled
                     aria-label={ariaLabel}
                     aria-disabled="true"
-                    className="flex flex-col items-start justify-between min-h-[140px] w-full p-4 rounded-lg border border-dashed border-primary/50 bg-card/60 text-foreground/70 text-left cursor-not-allowed shadow-sm"
+                    className="flex items-center gap-3 min-h-[44px] w-full p-2.5 rounded-md border border-dashed border-primary/50 bg-card/60 text-foreground/70 text-left cursor-not-allowed shadow-sm"
                   >
-                    <Icon className="h-7 w-7 text-primary/60" aria-hidden={true} />
-                    <div className="mt-3">
-                      <p className="text-base font-bold leading-tight">{title}</p>
-                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground mt-1">
-                        {subtitle}
-                      </p>
-                      <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-2">
-                        Coming soon
+                    <Icon className="h-5 w-5 text-primary/60 shrink-0" aria-hidden={true} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-bold leading-tight truncate">{title}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5 truncate">
+                        {subtitle} · Soon
                       </p>
                     </div>
                   </button>
