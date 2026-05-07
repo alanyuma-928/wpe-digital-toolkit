@@ -92,7 +92,7 @@ const Home = () => {
           <p className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground">
             ZTC Clinical Resource · WPE Dept.
           </p>
-          <h2 className="text-2xl font-bold text-foreground mt-1">
+          <h2 className="text-lg font-bold text-foreground mt-1 leading-tight">
             WPE Digital Tool Kit
           </h2>
           <p className="text-xs text-muted-foreground mt-2">
