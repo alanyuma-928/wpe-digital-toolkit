@@ -1,4 +1,4 @@
-### ### DTK DEPLOYMENT PROTOCOL V2.0.2 ###
+### ### DTK DEPLOYMENT PROTOCOL V2.0.3 ###
 name: Build and Deploy to Pages
 
 on:
@@ -6,17 +6,14 @@ on:
     branches: [main]
   workflow_dispatch: {} # Manual trigger button
 
-# Environment variables to opt-in to latest GitHub Runner engines
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true # Stabilized for Node 20 LTS
 
-# Permissions for GitHub Pages deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Prevent simultaneous deployments from conflicting
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -32,22 +29,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm' # Speeds up subsequent builds
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci # Uses package-lock.json for a clean, consistent build
+        run: npm ci
 
       - name: Build Clinical Kernel
         run: npm run build
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
 
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
 
+  deploy:
+    # This block solves the "Missing environment" (Status 400) error
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Deploy to Sovereign Edge
         id: deployment
         uses: actions/deploy-pages@v4
