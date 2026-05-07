@@ -6,10 +6,6 @@ import SimpleGuide from "@/components/SimpleGuide";
 import StreakBadge from "@/components/StreakBadge";
 import ObsidianToggle from "@/components/ObsidianToggle";
 
-/**
- * SE-Hardened (260px content well): metrics stacked into a 2-col grid,
- * header chrome compressed, icons reduced to 12px, type to 10–11px.
- */
 const WeatherMonitor = () => {
   const { data, loading, error, refresh, outdoorLocked, flag } = useWeather();
   const elevated = flag?.color === "Red" || flag?.color === "Black";
@@ -24,97 +20,99 @@ const WeatherMonitor = () => {
           : "border-primary bg-card"
       }`}
     >
-      <div className="mx-auto w-full max-w-[260px] px-2 py-2">
-        {/* Row 1: status icon + label + flag + refresh */}
-        <div className="flex items-center gap-1.5">
-          {elevated || outdoorLocked ? (
-            <AlertTriangle
-              className="h-3.5 w-3.5 text-destructive shrink-0 animate-safety-pulse motion-reduce:animate-none"
-              aria-hidden="true"
-            />
-          ) : (
-            <CloudSun className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden="true" />
+      <div className="mx-auto w-full max-w-[375px] px-4 py-2 flex items-start gap-3">
+        {elevated || outdoorLocked ? (
+          <AlertTriangle
+            className="h-5 w-5 text-destructive shrink-0 mt-0.5 animate-safety-pulse motion-reduce:animate-none"
+            aria-hidden="true"
+          />
+        ) : (
+          <CloudSun className="h-5 w-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+        )}
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground leading-tight">
+              KNYL · NWS Live
+            </p>
+            {flag && <SafetyFlagBadge flag={flag} size="sm" />}
+          </div>
+
+          {loading && !data ? (
+            <p className="text-sm font-bold text-foreground mt-0.5">Loading observation…</p>
+          ) : error && !data ? (
+            <p className="text-sm font-bold text-destructive mt-0.5">Offline · {error}</p>
+          ) : data ? (
+            <p className="text-sm font-bold text-foreground tabular-nums flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
+              <span className="inline-flex items-center gap-1">
+                <Thermometer className="h-3.5 w-3.5" aria-hidden="true" />
+                {data.tempF ?? "—"}°F
+              </span>
+              <span
+                className="inline-flex items-center gap-1"
+                aria-label={`WBGT ${data.wbgtF ?? "unavailable"} degrees Fahrenheit`}
+              >
+                <Flame className="h-3.5 w-3.5" aria-hidden="true" />
+                WBGT {data.wbgtF ?? "—"}°F
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Droplets className="h-3.5 w-3.5" aria-hidden="true" />
+                {data.humidity ?? "—"}%
+              </span>
+              <span
+                className="inline-flex items-center gap-1"
+                aria-label={`UV Index ${data.uvIndex ?? "unavailable"}`}
+              >
+                <Sun className="h-3.5 w-3.5" aria-hidden="true" />
+                UV {data.uvIndex ?? "—"}
+              </span>
+              <span
+                className="inline-flex items-center gap-1"
+                aria-label={
+                  data.aqi
+                    ? `Air Quality Index ${data.aqi.value}, ${data.aqi.category}, ${data.aqi.parameter}`
+                    : "Air Quality Index unavailable"
+                }
+              >
+                <Wind className="h-3.5 w-3.5" aria-hidden="true" />
+                AQI {data.aqi?.value ?? "—"}
+                {data.aqi?.parameter ? (
+                  <span className="text-[10px] font-semibold text-muted-foreground">
+                    {data.aqi.parameter}
+                  </span>
+                ) : null}
+              </span>
+              {outdoorLocked && (
+                <span className="text-[10px] font-extrabold uppercase tracking-wide text-destructive">
+                  Redline &gt;{THERMAL_REDLINE_F}°F
+                </span>
+              )}
+            </p>
+          ) : null}
+
+          {flag && elevated && (
+            <p className="text-[11px] font-semibold text-destructive mt-1">
+              {flag.guidance}
+            </p>
           )}
-          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground leading-none flex-1 min-w-0 truncate">
-            KNYL · NWS
-          </p>
-          {flag && <SafetyFlagBadge flag={flag} size="sm" />}
+        </div>
+
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <div className="flex items-center gap-1">
+            <StreakBadge />
+            <ObsidianToggle />
+            <SimpleGuide />
+          </div>
           <Button
             type="button"
             variant="ghost"
             size="icon"
             onClick={refresh}
             aria-label="Refresh KNYL observation"
-            className="h-7 w-7 text-foreground"
+            className="h-8 w-8 text-foreground"
           >
-            <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
-        </div>
-
-        {/* Row 2: metrics grid */}
-        {loading && !data ? (
-          <p className="text-[11px] font-bold text-foreground mt-1">Loading…</p>
-        ) : error && !data ? (
-          <p className="text-[11px] font-bold text-destructive mt-1 truncate">Offline · {error}</p>
-        ) : data ? (
-          <div className="mt-1 grid grid-cols-2 gap-x-2 gap-y-0.5 text-[11px] font-bold text-foreground tabular-nums">
-            <span className="inline-flex items-center gap-1">
-              <Thermometer className="h-3 w-3 shrink-0" aria-hidden="true" />
-              {data.tempF ?? "—"}°F
-            </span>
-            <span
-              className="inline-flex items-center gap-1"
-              aria-label={`WBGT ${data.wbgtF ?? "unavailable"} degrees Fahrenheit`}
-            >
-              <Flame className="h-3 w-3 shrink-0" aria-hidden="true" />
-              WBGT {data.wbgtF ?? "—"}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Droplets className="h-3 w-3 shrink-0" aria-hidden="true" />
-              {data.humidity ?? "—"}%
-            </span>
-            <span
-              className="inline-flex items-center gap-1"
-              aria-label={`UV Index ${data.uvIndex ?? "unavailable"}`}
-            >
-              <Sun className="h-3 w-3 shrink-0" aria-hidden="true" />
-              UV {data.uvIndex ?? "—"}
-            </span>
-            <span
-              className="inline-flex items-center gap-1 col-span-2"
-              aria-label={
-                data.aqi
-                  ? `Air Quality Index ${data.aqi.value}, ${data.aqi.category}, ${data.aqi.parameter}`
-                  : "Air Quality Index unavailable"
-              }
-            >
-              <Wind className="h-3 w-3 shrink-0" aria-hidden="true" />
-              AQI {data.aqi?.value ?? "—"}
-              {data.aqi?.parameter ? (
-                <span className="text-[10px] font-semibold text-muted-foreground truncate">
-                  {data.aqi.parameter}
-                </span>
-              ) : null}
-            </span>
-            {outdoorLocked && (
-              <span className="col-span-2 text-[10px] font-extrabold uppercase tracking-wide text-destructive">
-                Redline &gt;{THERMAL_REDLINE_F}°F
-              </span>
-            )}
-          </div>
-        ) : null}
-
-        {flag && elevated && (
-          <p className="text-[10px] font-semibold text-destructive mt-1 leading-snug">
-            {flag.guidance}
-          </p>
-        )}
-
-        {/* Row 3: utility toggles */}
-        <div className="mt-1.5 flex items-center justify-end gap-1 border-t border-primary/20 pt-1">
-          <StreakBadge />
-          <ObsidianToggle />
-          <SimpleGuide />
         </div>
       </div>
     </header>

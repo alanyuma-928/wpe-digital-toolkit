@@ -15,7 +15,7 @@ const Engine = () => {
         Skip to content
       </a>
 
-      <div className="mx-auto w-full max-w-[260px] px-4 py-6" data-se="260">
+      <div className="mx-auto w-full max-w-[375px] px-4 py-6">
         <div className="mb-3">
           <BackToHome />
         </div>
