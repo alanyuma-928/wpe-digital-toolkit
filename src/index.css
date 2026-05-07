@@ -166,3 +166,62 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* ============================================================
+   SE-Hardened 260px Content Well
+   Scoped down-scaling so existing Box/Tab components fit the
+   260px functional well without per-file refactors.
+   Apply via `data-se="260"` on the page wrapper.
+   ============================================================ */
+@layer utilities {
+  [data-se="260"] {
+    /* Typography compression */
+    & h1 { @apply text-lg leading-tight; }
+    & h2 { @apply text-base leading-tight; }
+    & h3 { @apply text-sm leading-tight; }
+    & h4 { @apply text-xs leading-tight; }
+    & p,
+    & label,
+    & li,
+    & span,
+    & td,
+    & th { font-size: clamp(10px, 3.2vw, 12px); line-height: 1.35; }
+
+    /* Inputs / buttons / selects: reduce height & padding while keeping ≥44px touch targets */
+    & input,
+    & select,
+    & textarea,
+    & button {
+      min-height: 44px;
+      font-size: 12px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+    & textarea { min-height: 64px; }
+
+    /* Layout density */
+    & .grid.grid-cols-2 { gap: 0.375rem; }
+    & .grid.grid-cols-3,
+    & .grid.grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.375rem; }
+    & section,
+    & .card,
+    & [class*="rounded-lg"] { padding: 0.5rem !important; }
+
+    /* Icons */
+    & svg { width: 14px; height: 14px; }
+    & svg.h-7,
+    & svg.h-8,
+    & svg.h-10,
+    & svg.h-12 { width: 18px !important; height: 18px !important; }
+
+    /* Big result numerals: keep emphasis but cap size */
+    & .text-4xl,
+    & .text-3xl,
+    & .text-2xl { font-size: 18px !important; line-height: 1.15 !important; }
+
+    /* Stack any flex rows that would overflow 260px */
+    & form .flex.gap-3,
+    & form .flex.gap-4 { flex-wrap: wrap; gap: 0.375rem; }
+  }
+}
+
