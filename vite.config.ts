@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "./",
+  base: "/alanyuma-928.github.io/wpe-digital-toolkit/",
   server: {
     host: "::",
     port: 8080,
