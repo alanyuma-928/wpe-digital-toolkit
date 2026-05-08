@@ -1,5 +1,6 @@
 import BackToHome from "@/components/BackToHome";
 import AdvancedProtocols from "@/components/home/AdvancedProtocols";
+import FlexibilityConverter from "@/components/flexibility/FlexibilityConverter";
 
 const Flexibility = () => {
   return (
