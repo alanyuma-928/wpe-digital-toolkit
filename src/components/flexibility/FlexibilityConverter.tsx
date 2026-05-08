@@ -97,9 +97,17 @@ const FlexibilityConverter = () => {
       return isFinite(n) && n >= 0 ? Math.round(n) : null;
     };
 
+    const gripLeftKg = toKg(gripLeft, units);
+    const gripRightKg = toKg(gripRight, units);
+    const gripAvgKg =
+      gripLeftKg !== null && gripRightKg !== null
+        ? Math.round(((gripLeftKg + gripRightKg) / 2) * 10) / 10
+        : null;
+
     return {
-      gripLeftKg: toKg(gripLeft, units),
-      gripRightKg: toKg(gripRight, units),
+      gripLeftKg,
+      gripRightKg,
+      gripAvgKg,
       reachCm: reachCm !== null ? Math.round(reachCm * 10) / 10 : null,
       rom: {
         shoulderFlexion: parseDeg(rom.shoulderFlexion),
