@@ -151,6 +151,8 @@ const Home = () => {
           </ul>
         </section>
 
+        <AdvancedProtocols />
+
         <footer
           role="contentinfo"
           className="mt-8 pt-4 border-t-2 border-primary/40 text-center"
