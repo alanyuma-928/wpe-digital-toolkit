@@ -97,9 +97,17 @@ const FlexibilityConverter = () => {
       return isFinite(n) && n >= 0 ? Math.round(n) : null;
     };
 
+    const gripLeftKg = toKg(gripLeft, units);
+    const gripRightKg = toKg(gripRight, units);
+    const gripAvgKg =
+      gripLeftKg !== null && gripRightKg !== null
+        ? Math.round(((gripLeftKg + gripRightKg) / 2) * 10) / 10
+        : null;
+
     return {
-      gripLeftKg: toKg(gripLeft, units),
-      gripRightKg: toKg(gripRight, units),
+      gripLeftKg,
+      gripRightKg,
+      gripAvgKg,
       reachCm: reachCm !== null ? Math.round(reachCm * 10) / 10 : null,
       rom: {
         shoulderFlexion: parseDeg(rom.shoulderFlexion),
@@ -285,6 +293,12 @@ const FlexibilityConverter = () => {
                 {si.reachCm !== null ? `${si.reachCm} cm` : "—"}
               </dd>
             </div>
+            <div>
+              <dt className="text-muted-foreground text-xs">Grip Avg</dt>
+              <dd className="font-bold tabular-nums">
+                {si.gripAvgKg !== null ? `${si.gripAvgKg} kg` : "—"}
+              </dd>
+            </div>
           </dl>
           <div className="mt-3 border-t border-primary/20 pt-2">
             <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
@@ -315,6 +329,8 @@ const FlexibilityConverter = () => {
                   (si.gripLeftKg !== null ? ` (${si.gripLeftKg} kg)` : ""),
                 `- **Handgrip Right**: ${gripRight || "—"} ${weightLabel}` +
                   (si.gripRightKg !== null ? ` (${si.gripRightKg} kg)` : ""),
+                `- **Handgrip Avg**: ` +
+                  (si.gripAvgKg !== null ? `${si.gripAvgKg} kg` : "—"),
                 `- **Sit-and-Reach**: ${reach || "—"} ${lengthLabel}` +
                   (si.reachCm !== null ? ` (${si.reachCm} cm)` : ""),
                 ...romFields.map(
