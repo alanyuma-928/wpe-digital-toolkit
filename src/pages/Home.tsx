@@ -68,6 +68,13 @@ const modules: ModuleTile[] = [
     enabled: true,
   },
   {
+    to: "/flexibility",
+    title: "Flexibility Box",
+    subtitle: "Grip · Sit-Reach · ROM",
+    ariaLabel: "Open the Flexibility Box: Handgrip, Sit-and-Reach, and Goniometry protocols",
+    Icon: StretchHorizontal,
+    enabled: true,
+  },
     to: "/solve",
     title: "Solve Box",
     subtitle: "FITT-VP · Rx PDF",
