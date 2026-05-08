@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Activity, Gauge, Apple, ShieldCheck, Dumbbell, HeartPulse, Moon, ClipboardCheck, type LucideIcon } from "lucide-react";
+import AdvancedProtocols from "@/components/home/AdvancedProtocols";
 
 interface ModuleTile {
   to: string;
@@ -149,6 +150,8 @@ const Home = () => {
             ))}
           </ul>
         </section>
+
+        <AdvancedProtocols />
 
         <footer
           role="contentinfo"
