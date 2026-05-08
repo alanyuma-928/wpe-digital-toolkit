@@ -90,8 +90,12 @@ const FlexibilityConverter = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="flex-grip" className="text-sm text-foreground">
+          <Label
+            htmlFor="flex-grip"
+            className="text-sm text-foreground flex items-center gap-1.5"
+          >
             Handgrip ({weightLabel})
+            <GripUnitTooltip unitLabel={weightLabel} />
           </Label>
           <Input
             id="flex-grip"
