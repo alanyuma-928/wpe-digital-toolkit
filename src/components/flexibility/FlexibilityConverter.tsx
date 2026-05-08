@@ -65,8 +65,15 @@ const EMPTY_ROM: RomState = {
   ankleDorsiflexion: "",
 };
 
+const toKg = (v: string, units: "imperial" | "metric") => {
+  const n = parseFloat(v);
+  if (!isFinite(n) || n <= 0) return null;
+  const kg = units === "metric" ? n : n / 2.2046226;
+  return Math.round(kg * 10) / 10;
+};
+
 /**
- * FlexibilityConverter — US/SI unit-aware inputs for Handgrip,
+ * FlexibilityConverter — US/SI unit-aware inputs for Handgrip (L/R),
  * Sit-and-Reach, and Goniometry ROM. Weight/length values normalize
  * to SI (kg, cm) for ACSM normative comparison; ROM stays in degrees.
  */
@@ -74,16 +81,13 @@ const FlexibilityConverter = () => {
   const { units, weightLabel } = useUnits();
   const lengthLabel = units === "metric" ? "cm" : "in";
 
-  const [grip, setGrip] = useState("");
+  const [gripLeft, setGripLeft] = useState("");
+  const [gripRight, setGripRight] = useState("");
   const [reach, setReach] = useState("");
   const [rom, setRom] = useState<RomState>(EMPTY_ROM);
 
   const si = useMemo(() => {
-    const g = parseFloat(grip);
     const r = parseFloat(reach);
-    const gripKg = isFinite(g) && g > 0
-      ? units === "metric" ? g : g / 2.2046226
-      : null;
     const reachCm = isFinite(r) && r > 0
       ? units === "metric" ? r : r * 2.54
       : null;
@@ -94,7 +98,8 @@ const FlexibilityConverter = () => {
     };
 
     return {
-      gripKg: gripKg !== null ? Math.round(gripKg * 10) / 10 : null,
+      gripLeftKg: toKg(gripLeft, units),
+      gripRightKg: toKg(gripRight, units),
       reachCm: reachCm !== null ? Math.round(reachCm * 10) / 10 : null,
       rom: {
         shoulderFlexion: parseDeg(rom.shoulderFlexion),
@@ -103,16 +108,18 @@ const FlexibilityConverter = () => {
         ankleDorsiflexion: parseDeg(rom.ankleDorsiflexion),
       },
     };
-  }, [grip, reach, rom, units]);
+  }, [gripLeft, gripRight, reach, rom, units]);
 
   const clearAll = () => {
-    setGrip("");
+    setGripLeft("");
+    setGripRight("");
     setReach("");
     setRom(EMPTY_ROM);
   };
 
   const hasOutput =
-    si.gripKg !== null ||
+    si.gripLeftKg !== null ||
+    si.gripRightKg !== null ||
     si.reachCm !== null ||
     Object.values(si.rom).some((v) => v !== null);
 
@@ -144,25 +151,45 @@ const FlexibilityConverter = () => {
         <UnitToggle />
       </div>
 
-      {/* Grip + Reach */}
+      {/* Grip L/R + Reach */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
           <Label
-            htmlFor="flex-grip"
+            htmlFor="flex-grip-left"
             className="text-sm text-foreground flex items-center gap-1.5"
           >
-            Handgrip ({weightLabel})
+            Handgrip — Left ({weightLabel})
             <GripUnitTooltip unitLabel={weightLabel} />
           </Label>
           <Input
-            id="flex-grip"
+            id="flex-grip-left"
             type="number"
             inputMode="decimal"
             min="0"
             step="0.1"
             placeholder={units === "metric" ? "e.g. 42" : "e.g. 92"}
-            value={grip}
-            onChange={(e) => setGrip(e.target.value)}
+            value={gripLeft}
+            onChange={(e) => setGripLeft(e.target.value)}
+            className="h-11 border-2 border-primary/40"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label
+            htmlFor="flex-grip-right"
+            className="text-sm text-foreground flex items-center gap-1.5"
+          >
+            Handgrip — Right ({weightLabel})
+            <GripUnitTooltip unitLabel={weightLabel} />
+          </Label>
+          <Input
+            id="flex-grip-right"
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="0.1"
+            placeholder={units === "metric" ? "e.g. 42" : "e.g. 92"}
+            value={gripRight}
+            onChange={(e) => setGripRight(e.target.value)}
             className="h-11 border-2 border-primary/40"
           />
         </div>
@@ -241,9 +268,15 @@ const FlexibilityConverter = () => {
           </p>
           <dl className="mt-2 grid grid-cols-2 gap-2 text-sm">
             <div>
-              <dt className="text-muted-foreground text-xs">Grip</dt>
+              <dt className="text-muted-foreground text-xs">Grip Left</dt>
               <dd className="font-bold tabular-nums">
-                {si.gripKg !== null ? `${si.gripKg} kg` : "—"}
+                {si.gripLeftKg !== null ? `${si.gripLeftKg} kg` : "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground text-xs">Grip Right</dt>
+              <dd className="font-bold tabular-nums">
+                {si.gripRightKg !== null ? `${si.gripRightKg} kg` : "—"}
               </dd>
             </div>
             <div>
@@ -278,8 +311,10 @@ const FlexibilityConverter = () => {
                 "### WPE Audit · Flexibility & Grip",
                 "",
                 `- **Input Units**: ${units}`,
-                `- **Handgrip**: ${grip || "—"} ${weightLabel}` +
-                  (si.gripKg !== null ? ` (${si.gripKg} kg)` : ""),
+                `- **Handgrip Left**: ${gripLeft || "—"} ${weightLabel}` +
+                  (si.gripLeftKg !== null ? ` (${si.gripLeftKg} kg)` : ""),
+                `- **Handgrip Right**: ${gripRight || "—"} ${weightLabel}` +
+                  (si.gripRightKg !== null ? ` (${si.gripRightKg} kg)` : ""),
                 `- **Sit-and-Reach**: ${reach || "—"} ${lengthLabel}` +
                   (si.reachCm !== null ? ` (${si.reachCm} cm)` : ""),
                 ...romFields.map(
