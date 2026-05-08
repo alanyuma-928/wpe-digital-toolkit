@@ -75,6 +75,7 @@ const modules: ModuleTile[] = [
     Icon: StretchHorizontal,
     enabled: true,
   },
+  {
     to: "/solve",
     title: "Solve Box",
     subtitle: "FITT-VP · Rx PDF",
