@@ -329,6 +329,8 @@ const FlexibilityConverter = () => {
                   (si.gripLeftKg !== null ? ` (${si.gripLeftKg} kg)` : ""),
                 `- **Handgrip Right**: ${gripRight || "—"} ${weightLabel}` +
                   (si.gripRightKg !== null ? ` (${si.gripRightKg} kg)` : ""),
+                `- **Handgrip Avg**: ` +
+                  (si.gripAvgKg !== null ? `${si.gripAvgKg} kg` : "—"),
                 `- **Sit-and-Reach**: ${reach || "—"} ${lengthLabel}` +
                   (si.reachCm !== null ? ` (${si.reachCm} cm)` : ""),
                 ...romFields.map(
