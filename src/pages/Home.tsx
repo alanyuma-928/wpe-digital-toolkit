@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { Activity, Gauge, Apple, ShieldCheck, Dumbbell, HeartPulse, Moon, ClipboardCheck, type LucideIcon } from "lucide-react";
-import AdvancedProtocols from "@/components/home/AdvancedProtocols";
+import { Activity, Gauge, Apple, ShieldCheck, Dumbbell, HeartPulse, Moon, ClipboardCheck, StretchHorizontal, type LucideIcon } from "lucide-react";
 
 interface ModuleTile {
   to: string;
@@ -66,6 +65,14 @@ const modules: ModuleTile[] = [
     subtitle: "Sleep · Soreness · Mind",
     ariaLabel: "Open the Recovery and Readiness Box: sleep, soreness, and mental readiness",
     Icon: Moon,
+    enabled: true,
+  },
+  {
+    to: "/flexibility",
+    title: "Flexibility Box",
+    subtitle: "Grip · Sit-Reach · ROM",
+    ariaLabel: "Open the Flexibility Box: Handgrip, Sit-and-Reach, and Goniometry protocols",
+    Icon: StretchHorizontal,
     enabled: true,
   },
   {
@@ -150,8 +157,6 @@ const Home = () => {
             ))}
           </ul>
         </section>
-
-        <AdvancedProtocols />
 
         <footer
           role="contentinfo"
