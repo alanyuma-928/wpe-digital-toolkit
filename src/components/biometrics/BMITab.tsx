@@ -4,11 +4,15 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import ClinicalNotes from "./ClinicalNotes";
 import CopyAuditButton from "@/components/CopyAuditButton";
+import UnitToggle from "@/components/UnitToggle";
+import { useUnits } from "@/context/UnitsContext";
 
 interface BMIResult {
   bmi: number;
   category: string;
   range: string;
+  heightCm: number;
+  weightKg: number;
 }
 
 const classify = (bmi: number): { category: string; range: string } => {
@@ -19,39 +23,53 @@ const classify = (bmi: number): { category: string; range: string } => {
 };
 
 const BMITab = () => {
-  const [heightIn, setHeightIn] = useState("");
-  const [weightLb, setWeightLb] = useState("");
+  const { units, weightLabel, heightLabel } = useUnits();
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
   const [result, setResult] = useState<BMIResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const compute = () => {
     setError(null);
-    const h = parseFloat(heightIn);
-    const w = parseFloat(weightLb);
+    const h = parseFloat(height);
+    const w = parseFloat(weight);
     if (!h || !w || h <= 0 || w <= 0) {
-      setError("Enter valid Height (in) and Weight (lb).");
+      setError(`Enter valid Height (${heightLabel}) and Weight (${weightLabel}).`);
       setResult(null);
       return;
     }
-    const bmi = (w / (h * h)) * 703;
+    // Normalize to SI (kg, m) regardless of toggle
+    const weightKg = units === "metric" ? w : w / 2.2046226;
+    const heightCm = units === "metric" ? h : h * 2.54;
+    const heightM = heightCm / 100;
+    const bmi = weightKg / (heightM * heightM);
     const { category, range } = classify(bmi);
-    setResult({ bmi: Math.round(bmi * 10) / 10, category, range });
+    setResult({
+      bmi: Math.round(bmi * 10) / 10,
+      category,
+      range,
+      heightCm: Math.round(heightCm * 10) / 10,
+      weightKg: Math.round(weightKg * 10) / 10,
+    });
   };
 
   const clearAll = () => {
-    setHeightIn("");
-    setWeightLb("");
+    setHeight("");
+    setWeight("");
     setResult(null);
     setError(null);
   };
 
   return (
     <section aria-labelledby="bmi-heading">
-      <h3 id="bmi-heading" className="text-xl font-bold text-foreground mb-1">
-        BMI Auditor
-      </h3>
+      <div className="flex items-start justify-between gap-3 mb-1">
+        <h3 id="bmi-heading" className="text-xl font-bold text-foreground">
+          BMI Auditor
+        </h3>
+        <UnitToggle />
+      </div>
       <p className="text-sm text-muted-foreground mb-5">
-        ACSM 12th Ed. classification. Imperial units.
+        ACSM 12th Ed. classification. Auto-converts to SI (kg, m) for calculation.
       </p>
 
       <form
@@ -63,18 +81,18 @@ const BMITab = () => {
         noValidate
       >
         <div className="space-y-2">
-          <Label htmlFor="height-in" className="text-base text-foreground">
-            Height (inches)
+          <Label htmlFor="bmi-height" className="text-base text-foreground">
+            Height ({heightLabel})
           </Label>
           <Input
-            id="height-in"
+            id="bmi-height"
             type="number"
             inputMode="decimal"
             min="0"
             step="0.1"
-            placeholder="e.g. 67"
-            value={heightIn}
-            onChange={(e) => setHeightIn(e.target.value)}
+            placeholder={units === "metric" ? "e.g. 170" : "e.g. 67"}
+            value={height}
+            onChange={(e) => setHeight(e.target.value)}
             className="h-12 text-base border-2 border-primary/40"
             aria-required="true"
             aria-invalid={!!error}
@@ -82,18 +100,18 @@ const BMITab = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="weight-lb" className="text-base text-foreground">
-            Weight (pounds)
+          <Label htmlFor="bmi-weight" className="text-base text-foreground">
+            Weight ({weightLabel})
           </Label>
           <Input
-            id="weight-lb"
+            id="bmi-weight"
             type="number"
             inputMode="decimal"
             min="0"
             step="0.1"
-            placeholder="e.g. 145"
-            value={weightLb}
-            onChange={(e) => setWeightLb(e.target.value)}
+            placeholder={units === "metric" ? "e.g. 66" : "e.g. 145"}
+            value={weight}
+            onChange={(e) => setWeight(e.target.value)}
             className="h-12 text-base border-2 border-primary/40"
             aria-required="true"
             aria-invalid={!!error}
@@ -139,6 +157,9 @@ const BMITab = () => {
           </p>
           <p className="text-lg font-bold text-foreground">{result.category}</p>
           <p className="text-xs text-muted-foreground mt-1">{result.range}</p>
+          <p className="text-[11px] text-muted-foreground mt-2">
+            SI normalized: {result.weightKg} kg · {result.heightCm} cm
+          </p>
         </div>
       )}
 
@@ -148,8 +169,9 @@ const BMITab = () => {
             ? [
                 "### WPE Audit · BMI",
                 "",
-                `- **Height**: ${heightIn} in`,
-                `- **Weight**: ${weightLb} lb`,
+                `- **Input Units**: ${units}`,
+                `- **Height**: ${height} ${heightLabel} (${result.heightCm} cm)`,
+                `- **Weight**: ${weight} ${weightLabel} (${result.weightKg} kg)`,
                 "",
                 `**BMI**: ${result.bmi}`,
                 `**Category**: ${result.category} (${result.range})`,
