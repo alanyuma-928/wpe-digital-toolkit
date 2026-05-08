@@ -127,8 +127,12 @@ const BMITab = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="bmi-weight" className="text-base text-foreground">
+          <Label
+            htmlFor="bmi-weight"
+            className="text-base text-foreground flex items-center gap-1.5"
+          >
             Weight ({weightLabel})
+            <WeightUnitTooltip unitLabel={weightLabel} />
           </Label>
           <Input
             id="bmi-weight"
