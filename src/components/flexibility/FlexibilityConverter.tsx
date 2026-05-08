@@ -1,10 +1,37 @@
 import { useMemo, useState } from "react";
+import { Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import UnitToggle from "@/components/UnitToggle";
 import { useUnits } from "@/context/UnitsContext";
 import CopyAuditButton from "@/components/CopyAuditButton";
+
+const GripUnitTooltip = ({ unitLabel }: { unitLabel: string }) => (
+  <TooltipProvider delayDuration={150}>
+    <Tooltip>
+      <TooltipTrigger
+        type="button"
+        aria-label={`Handgrip unit info: currently ${unitLabel}`}
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-primary hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary"
+      >
+        <Info className="h-4 w-4" aria-hidden="true" />
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-[220px] text-xs leading-snug">
+        Enter handgrip force in <strong>{unitLabel}</strong> (matches the US|SI
+        toggle). Values in lb are auto-divided by 2.2046 to normalize to{" "}
+        <strong>kg</strong> for ACSM 12th Ed. normative comparison.
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
+
 
 /**
  * FlexibilityConverter — US/SI unit-aware inputs for Handgrip and
@@ -63,8 +90,12 @@ const FlexibilityConverter = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="flex-grip" className="text-sm text-foreground">
+          <Label
+            htmlFor="flex-grip"
+            className="text-sm text-foreground flex items-center gap-1.5"
+          >
             Handgrip ({weightLabel})
+            <GripUnitTooltip unitLabel={weightLabel} />
           </Label>
           <Input
             id="flex-grip"
