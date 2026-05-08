@@ -39,6 +39,7 @@ const App = () => (
               <Route path="/strength" element={<Strength />} />
               <Route path="/cardio" element={<Cardio />} />
               <Route path="/recovery" element={<Recovery />} />
+              <Route path="/flexibility" element={<Flexibility />} />
               <Route path="/solve" element={<Solve />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
