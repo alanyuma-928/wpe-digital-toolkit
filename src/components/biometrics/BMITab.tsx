@@ -1,11 +1,38 @@
 import { useState } from "react";
+import { Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import ClinicalNotes from "./ClinicalNotes";
 import CopyAuditButton from "@/components/CopyAuditButton";
 import UnitToggle from "@/components/UnitToggle";
 import { useUnits } from "@/context/UnitsContext";
+
+const WeightUnitTooltip = ({ unitLabel }: { unitLabel: string }) => (
+  <TooltipProvider delayDuration={150}>
+    <Tooltip>
+      <TooltipTrigger
+        type="button"
+        aria-label={`Weight unit info: currently ${unitLabel}`}
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-primary hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary"
+      >
+        <Info className="h-4 w-4" aria-hidden="true" />
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-[220px] text-xs leading-snug">
+        Enter body weight in <strong>{unitLabel}</strong> (matches the US|SI
+        toggle). Values in lb are auto-divided by 2.2046 to normalize to{" "}
+        <strong>kg</strong>; height converts to metres for the ACSM BMI
+        formula.
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
 
 interface BMIResult {
   bmi: number;
