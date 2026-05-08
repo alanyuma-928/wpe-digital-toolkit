@@ -32,11 +32,43 @@ const GripUnitTooltip = ({ unitLabel }: { unitLabel: string }) => (
   </TooltipProvider>
 );
 
+const RomTooltip = () => (
+  <TooltipProvider delayDuration={150}>
+    <Tooltip>
+      <TooltipTrigger
+        type="button"
+        aria-label="Goniometry ROM info"
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-primary hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary"
+      >
+        <Info className="h-4 w-4" aria-hidden="true" />
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-[220px] text-xs leading-snug">
+        Enter active or passive ROM in <strong>degrees</strong>. Goniometry
+        values do not change between US and SI; they are recorded as-is for
+        ACSM 12th Ed. normative comparison.
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
+
+interface RomState {
+  shoulderFlexion: string;
+  hipFlexion: string;
+  kneeFlexion: string;
+  ankleDorsiflexion: string;
+}
+
+const EMPTY_ROM: RomState = {
+  shoulderFlexion: "",
+  hipFlexion: "",
+  kneeFlexion: "",
+  ankleDorsiflexion: "",
+};
 
 /**
- * FlexibilityConverter — US/SI unit-aware inputs for Handgrip and
- * Sit-and-Reach. All values normalize to SI (kg, cm) for ACSM
- * normative comparison regardless of the active toggle.
+ * FlexibilityConverter — US/SI unit-aware inputs for Handgrip,
+ * Sit-and-Reach, and Goniometry ROM. Weight/length values normalize
+ * to SI (kg, cm) for ACSM normative comparison; ROM stays in degrees.
  */
 const FlexibilityConverter = () => {
   const { units, weightLabel } = useUnits();
@@ -44,6 +76,7 @@ const FlexibilityConverter = () => {
 
   const [grip, setGrip] = useState("");
   const [reach, setReach] = useState("");
+  const [rom, setRom] = useState<RomState>(EMPTY_ROM);
 
   const si = useMemo(() => {
     const g = parseFloat(grip);
@@ -54,18 +87,41 @@ const FlexibilityConverter = () => {
     const reachCm = isFinite(r) && r > 0
       ? units === "metric" ? r : r * 2.54
       : null;
+
+    const parseDeg = (v: string) => {
+      const n = parseFloat(v);
+      return isFinite(n) && n >= 0 ? Math.round(n) : null;
+    };
+
     return {
       gripKg: gripKg !== null ? Math.round(gripKg * 10) / 10 : null,
       reachCm: reachCm !== null ? Math.round(reachCm * 10) / 10 : null,
+      rom: {
+        shoulderFlexion: parseDeg(rom.shoulderFlexion),
+        hipFlexion: parseDeg(rom.hipFlexion),
+        kneeFlexion: parseDeg(rom.kneeFlexion),
+        ankleDorsiflexion: parseDeg(rom.ankleDorsiflexion),
+      },
     };
-  }, [grip, reach, units]);
+  }, [grip, reach, rom, units]);
 
   const clearAll = () => {
     setGrip("");
     setReach("");
+    setRom(EMPTY_ROM);
   };
 
-  const hasOutput = si.gripKg !== null || si.reachCm !== null;
+  const hasOutput =
+    si.gripKg !== null ||
+    si.reachCm !== null ||
+    Object.values(si.rom).some((v) => v !== null);
+
+  const romFields: { key: keyof RomState; label: string }[] = [
+    { key: "shoulderFlexion", label: "Shoulder Flexion" },
+    { key: "hipFlexion", label: "Hip Flexion" },
+    { key: "kneeFlexion", label: "Knee Flexion" },
+    { key: "ankleDorsiflexion", label: "Ankle Dorsiflexion" },
+  ];
 
   return (
     <section
@@ -88,6 +144,7 @@ const FlexibilityConverter = () => {
         <UnitToggle />
       </div>
 
+      {/* Grip + Reach */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
           <Label
@@ -126,6 +183,42 @@ const FlexibilityConverter = () => {
         </div>
       </div>
 
+      {/* Goniometry ROM */}
+      <div className="mt-5">
+        <div className="flex items-center gap-1.5 mb-2">
+          <h4 className="text-sm font-bold text-foreground">
+            Goniometry ROM
+          </h4>
+          <RomTooltip />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {romFields.map(({ key, label }) => (
+            <div key={key} className="space-y-2">
+              <Label
+                htmlFor={`flex-rom-${key}`}
+                className="text-sm text-foreground"
+              >
+                {label} (deg)
+              </Label>
+              <Input
+                id={`flex-rom-${key}`}
+                type="number"
+                inputMode="decimal"
+                min="0"
+                max="360"
+                step="1"
+                placeholder="e.g. 180"
+                value={rom[key]}
+                onChange={(e) =>
+                  setRom((prev) => ({ ...prev, [key]: e.target.value }))
+                }
+                className="h-11 border-2 border-primary/40"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="flex gap-3 mt-4">
         <Button
           type="button"
@@ -160,6 +253,21 @@ const FlexibilityConverter = () => {
               </dd>
             </div>
           </dl>
+          <div className="mt-3 border-t border-primary/20 pt-2">
+            <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+              Goniometry ROM (deg)
+            </p>
+            <dl className="mt-2 grid grid-cols-2 gap-2 text-sm">
+              {romFields.map(({ key, label }) => (
+                <div key={key}>
+                  <dt className="text-muted-foreground text-xs">{label}</dt>
+                  <dd className="font-bold tabular-nums">
+                    {si.rom[key] !== null ? `${si.rom[key]}°` : "—"}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
       )}
 
@@ -174,6 +282,11 @@ const FlexibilityConverter = () => {
                   (si.gripKg !== null ? ` (${si.gripKg} kg)` : ""),
                 `- **Sit-and-Reach**: ${reach || "—"} ${lengthLabel}` +
                   (si.reachCm !== null ? ` (${si.reachCm} cm)` : ""),
+                ...romFields.map(
+                  ({ key, label }) =>
+                    `- **${label}**: ${rom[key] || "—"} deg` +
+                    (si.rom[key] !== null ? ` (${si.rom[key]}°)` : "")
+                ),
                 "",
                 "_SSOT: ACSM 12th Ed. · normative tables in SI._",
               ].join("\n")
