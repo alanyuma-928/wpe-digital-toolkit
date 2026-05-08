@@ -1,5 +1,6 @@
 import BackToHome from "@/components/BackToHome";
 import AdvancedProtocols from "@/components/home/AdvancedProtocols";
+import FlexibilityConverter from "@/components/flexibility/FlexibilityConverter";
 
 const Flexibility = () => {
   return (
@@ -28,7 +29,8 @@ const Flexibility = () => {
           </p>
         </header>
 
-        <div id="main-content">
+        <div id="main-content" className="space-y-5">
+          <FlexibilityConverter />
           <div className="bg-card border-2 border-primary rounded-lg p-4">
             <AdvancedProtocols />
           </div>
