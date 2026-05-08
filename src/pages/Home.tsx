@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { Activity, Gauge, Apple, ShieldCheck, Dumbbell, HeartPulse, Moon, ClipboardCheck, type LucideIcon } from "lucide-react";
-import AdvancedProtocols from "@/components/home/AdvancedProtocols";
+import { Activity, Gauge, Apple, ShieldCheck, Dumbbell, HeartPulse, Moon, ClipboardCheck, StretchHorizontal, type LucideIcon } from "lucide-react";
 
 interface ModuleTile {
   to: string;
