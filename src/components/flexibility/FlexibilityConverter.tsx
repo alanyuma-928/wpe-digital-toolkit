@@ -293,6 +293,12 @@ const FlexibilityConverter = () => {
                 {si.reachCm !== null ? `${si.reachCm} cm` : "—"}
               </dd>
             </div>
+            <div>
+              <dt className="text-muted-foreground text-xs">Grip Avg</dt>
+              <dd className="font-bold tabular-nums">
+                {si.gripAvgKg !== null ? `${si.gripAvgKg} kg` : "—"}
+              </dd>
+            </div>
           </dl>
           <div className="mt-3 border-t border-primary/20 pt-2">
             <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
