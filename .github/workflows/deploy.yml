@@ -3,10 +3,10 @@ name: Build and Deploy to Pages
 on:
   push:
     branches: [main]
-  workflow_dispatch: {} # Manual trigger button
+  workflow_dispatch: {}
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true # Stabilized for Node 20 LTS
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true
 
 permissions:
   contents: read
