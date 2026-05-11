@@ -1,4 +1,3 @@
-### ### DTK DEPLOYMENT PROTOCOL V2.0.3 ###
 name: Build and Deploy to Pages
 
 on:
@@ -43,7 +42,6 @@ jobs:
           path: './dist'
 
   deploy:
-    # This block solves the "Missing environment" (Status 400) error
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -53,4 +51,3 @@ jobs:
       - name: Deploy to Sovereign Edge
         id: deployment
         uses: actions/deploy-pages@v4
-### ### END PROTOCOL ###
