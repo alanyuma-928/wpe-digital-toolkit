@@ -2,8 +2,7 @@
 **The Single Source of Truth for Clinical Exercise Science & Nutrition**
 
 ### ### DTK DEPLOYMENT PROTOCOL V2.0.3 ###
-## 🎙️ Architect’s Overview
-...
+## 🎙️ Architect's Overview
 
 ## 📱 The Tool Boxes
 The DTK is divided into five high-utility clinical modules:
@@ -25,7 +24,7 @@ The DTK was developed using an **Agentic "Vibe Coding"** methodology—leveragin
 
 ## 🛡️ Structural Integrity Protocol
 ### The ### Delimiter Standard
-All clinical case data and client profiles must be wrapped in **triple-hash delimiters (###)** to ensure precise data handling and AI auditing accuracy.
+All clinical case data and client profiles must be wrapped in **triple-hash delimiters (###)** to ensure precise data handling and accurate AI auditing.
 
 ### Accessibility Standards
 * **Palette:** Navy-on-Creme (#002147 / #F5F5DC).
