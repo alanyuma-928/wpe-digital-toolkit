@@ -12,6 +12,7 @@ The DTK is divided into five high-utility clinical modules:
 * **The Strength Box:** Resistance training linter tracking **Relative Strength** and movement mastery (10/7/0).
 * **The Fuel Box:** Macronutrient splitting, Harris-Benedict RMR, and **Athlete Plate** selection (Rest/Practice/Game) with **DGA 2025-2030** ultra-processed food (UPF) density auditing.
 * **The Recovery Box:** Biopsychosocial auditing of Sleep, Soreness, and **Mental Readiness**.
+* * **The Flexibility Box:** Goniometric auditing of joint ROM and ACSM-standard flexibility protocols (Static/PNF) with a specialized **"Desk-Bound" Mobility Linter** for sedentary student populations.
 
 ---
 
