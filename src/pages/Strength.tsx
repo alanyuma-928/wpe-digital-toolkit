@@ -1,6 +1,7 @@
 import BackToHome from "@/components/BackToHome";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StrengthTab from "@/components/strength/StrengthTab";
+import StrengthBox from "@/components/strength/StrengthBox";
 
 const Strength = () => {
   return (
@@ -31,18 +32,28 @@ const Strength = () => {
 
         <div id="main-content">
           <div className="bg-card border-2 border-primary rounded-lg p-4">
-            <Tabs defaultValue="strength" className="w-full">
+            <Tabs defaultValue="box" className="w-full">
               <TabsList
-                className="grid w-full grid-cols-1 h-12 bg-secondary border-2 border-primary/40 p-1"
+                className="grid w-full grid-cols-2 h-12 bg-secondary border-2 border-primary/40 p-1"
                 aria-label="Strength auditors"
               >
+                <TabsTrigger
+                  value="box"
+                  className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  Strength Box
+                </TabsTrigger>
                 <TabsTrigger
                   value="strength"
                   className="h-full text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
-                  Strength
+                  Auditor
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="box" className="mt-5">
+                <StrengthBox />
+              </TabsContent>
 
               <TabsContent value="strength" className="mt-5">
                 <StrengthTab />
